@@ -14,7 +14,7 @@
 # Maven
 log/
 target/
-
+*.sql
 *results/
 *.csv
 *.swp
