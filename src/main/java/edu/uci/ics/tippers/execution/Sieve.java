@@ -4,6 +4,7 @@ import edu.uci.ics.tippers.common.PolicyConstants;
 import edu.uci.ics.tippers.common.PolicyEngineException;
 import edu.uci.ics.tippers.execution.experiments.performance.PolicyScaler;
 import edu.uci.ics.tippers.execution.experiments.performance.QueryPerformance;
+import edu.uci.ics.tippers.execution.middleware.MiddleWare;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -20,11 +21,13 @@ public class Sieve {
     public static void runSieve() {
         boolean QUERY_PERFORMANCE_EXP = false;
         boolean POLICY_SCALER_EXP = false;
+        boolean MIDDLEWARE_MODE = false;
         Configurations configs = new Configurations();
         try {
             Configuration datasetConfig = configs.properties("config/general.properties");
             QUERY_PERFORMANCE_EXP = datasetConfig.getBoolean("query_performance");
             POLICY_SCALER_EXP = datasetConfig.getBoolean("policy_scaler");
+            MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
@@ -38,6 +41,10 @@ public class Sieve {
         if(POLICY_SCALER_EXP) {
             PolicyScaler policyScaler = new PolicyScaler();
             policyScaler.runExperiment();
+        }
+        if(MIDDLEWARE_MODE) {
+            MiddleWare mid = new MiddleWare();
+            System.out.println("lets see what happens after this point");
         }
     }
 }
