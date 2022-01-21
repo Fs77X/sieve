@@ -19,32 +19,47 @@ public class Sieve {
     //     runSieve();
     // }
 
-    // public static void runSieve() {
-    //     boolean QUERY_PERFORMANCE_EXP = false;
-    //     boolean POLICY_SCALER_EXP = false;
-    //     boolean MIDDLEWARE_MODE = false;
-    //     Configurations configs = new Configurations();
-    //     try {
-    //         Configuration datasetConfig = configs.properties("config/general.properties");
-    //         QUERY_PERFORMANCE_EXP = datasetConfig.getBoolean("query_performance");
-    //         POLICY_SCALER_EXP = datasetConfig.getBoolean("policy_scaler");
-    //         MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
-    //     } catch (ConfigurationException e) {
-    //         e.printStackTrace();
-    //     }
+    public static void runSieve() {
+        boolean QUERY_PERFORMANCE_EXP = false;
+        boolean POLICY_SCALER_EXP = false;
+        boolean MIDDLEWARE_MODE = false;
+        Configurations configs = new Configurations();
+        try {
+            Configuration datasetConfig = configs.properties("config/general.properties");
+            QUERY_PERFORMANCE_EXP = datasetConfig.getBoolean("query_performance");
+            POLICY_SCALER_EXP = datasetConfig.getBoolean("policy_scaler");
+            MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
 
-    //     if(QUERY_PERFORMANCE_EXP) {
-    //         if(PolicyConstants.DBMS_CHOICE.equalsIgnoreCase(PolicyConstants.PGSQL_DBMS))
-    //             throw new PolicyEngineException("Query Performance experiments only supported on MySQL");
-    //         QueryPerformance queryPerformance = new QueryPerformance();
-    //         queryPerformance.runExperiment();
-    //     }
-    //     if(POLICY_SCALER_EXP) {
-    //         PolicyScaler policyScaler = new PolicyScaler();
-    //         policyScaler.runExperiment();
-    //     }
-    // }
+        if(QUERY_PERFORMANCE_EXP) {
+            if(PolicyConstants.DBMS_CHOICE.equalsIgnoreCase(PolicyConstants.PGSQL_DBMS))
+                throw new PolicyEngineException("Query Performance experiments only supported on MySQL");
+            QueryPerformance queryPerformance = new QueryPerformance();
+            queryPerformance.runExperiment();
+        }
+        if(POLICY_SCALER_EXP) {
+            PolicyScaler policyScaler = new PolicyScaler();
+            policyScaler.runExperiment();
+        }
+    }
     public static void main(String[] args) {
-        SpringApplication.run(Sieve.class, args);
+        PolicyConstants.initialize();
+        boolean MIDDLEWARE_MODE = false;
+        Configurations configs = new Configurations();
+         try {
+            Configuration datasetConfig = configs.properties("config/general.properties");
+            MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+        if (!MIDDLEWARE_MODE) {
+            System.out.println("Running Sieve on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
+                + PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
+            runSieve();
+        } else {
+            SpringApplication.run(Sieve.class, args);
+        }
     }
 }

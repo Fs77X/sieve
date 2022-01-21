@@ -24,7 +24,7 @@ mvn clean install
 ```
 mvn exec:java 
 ```
-
+./mvnw spring-boot:run
 ## License
 [Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
 

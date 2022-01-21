@@ -147,6 +147,7 @@ public class PolicyConstants {
     public static final String ORDERS_TABLE = "orders";
     public static final String WIFI_TABLE = "presence";
     public static final String MALL_TABLE = "mall_observation";
+    public static final String GDPR_TABLE = "gdpr_data"
 
 
     //DIRECTORY PATHS
@@ -189,5 +190,7 @@ public class PolicyConstants {
     public static final String M_TIME = "obs_time";
     public static final String M_DEVICE = "device_id";
     public static final String M_INTEREST = "user_interest";
+
+    //add table attributes here
 
 }
