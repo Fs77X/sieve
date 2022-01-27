@@ -98,7 +98,7 @@ public class PolicyScaler {
                     GuardExp guardExp = gh.create();
                     String guard_query_union = guardExp.queryRewrite(true, true);
                     QueryResult execResultUnion = queryManager.runTimedQueryExp(guard_query_union, EXP_REPETITIONS);
-                    System.out.println(execResultUnion.getQueryResult());
+                    // System.out.println(execResultUnion.getQueryResult());
                     expResult.setSieveR(execResultUnion.getTimeTaken().toMillis());
                     if (!resultMap.containsKey(xpoint)) {
                         List<ExpResult> expResults = new ArrayList<>();
