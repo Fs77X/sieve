@@ -11,10 +11,10 @@ import java.util.List;
 public class PolicyPersistor {
 
     private static final PolicyPersistor _instance = new PolicyPersistor();
-    //TODO: Generalize this database connection
+    // TODO: Generalize this database connection
     private static Connection connection;
 
-    private PolicyPersistor(){
+    private PolicyPersistor() {
 
     }
 
@@ -24,7 +24,8 @@ public class PolicyPersistor {
     }
 
     /**
-     * Inserts a list of policies into a relational table based on whether it's a user policy or a group policy
+     * Inserts a list of policies into a relational table based on whether it's a
+     * user policy or a group policy
      *
      * @param bePolicies
      */
@@ -48,7 +49,7 @@ public class PolicyPersistor {
             PreparedStatement groupOcStmt = connection.prepareStatement(groupObjectConditionInsert);
 
             for (BEPolicy bePolicy : bePolicies) {
-                if (bePolicy.typeOfPolicy()) { //User Policy
+                if (bePolicy.typeOfPolicy()) { // User Policy
                     userPolicyStmt.setString(1, bePolicy.getId());
                     userPolicyStmt.setInt(2, Integer.parseInt(bePolicy.fetchQuerier()));
                     userPolicyStmt.setString(3, bePolicy.getPurpose());
@@ -66,7 +67,7 @@ public class PolicyPersistor {
                             userOcStmt.addBatch();
                         }
                     }
-                } else { //Group Policy
+                } else { // Group Policy
                     USER_POLICY = false;
 
                     groupPolicyStmt.setString(1, bePolicy.getId());
@@ -102,11 +103,16 @@ public class PolicyPersistor {
     }
 
     private Operation convertOperator(String operator) {
-        if (operator.equalsIgnoreCase("=")) return Operation.EQ;
-        else if (operator.equalsIgnoreCase(">=")) return Operation.GTE;
-        else if (operator.equalsIgnoreCase("<=")) return Operation.LTE;
-        else if (operator.equalsIgnoreCase("<")) return Operation.LT;
-        else return Operation.GT;
+        if (operator.equalsIgnoreCase("="))
+            return Operation.EQ;
+        else if (operator.equalsIgnoreCase(">="))
+            return Operation.GTE;
+        else if (operator.equalsIgnoreCase("<="))
+            return Operation.LTE;
+        else if (operator.equalsIgnoreCase("<"))
+            return Operation.LT;
+        else
+            return Operation.GT;
     }
 
     public List<BEPolicy> retrievePolicies(String querier, String querier_type, String enforcement_action) {
@@ -125,7 +131,8 @@ public class PolicyPersistor {
         PreparedStatement queryStm = null;
         try {
             if (querier != null) {
-                queryStm = connection.prepareStatement("SELECT " + policy_table + ".id as \"" + policy_table + ".id\"," +
+                queryStm = connection.prepareStatement("SELECT " + policy_table + ".id as \"" + policy_table + ".id\","
+                        +
                         policy_table + ".querier as \"" + policy_table + ".querier\"," +
                         policy_table + ".purpose as \"" + policy_table + ".purpose\", " +
                         policy_table + ".enforcement_action as \"" + policy_table + ".enforcement_action\"," +
@@ -137,14 +144,17 @@ public class PolicyPersistor {
                         oc_table + ".operator as \"" + oc_table + ".operator\"," +
                         oc_table + ".comp_value as \"" + oc_table + ".comp_value\" " +
                         "FROM " + policy_table + ", " + oc_table +
-                        " WHERE " + policy_table + ".querier=? AND " + policy_table + ".id = " + oc_table + ".policy_id " +
+                        " WHERE " + policy_table + ".querier=? AND " + policy_table + ".id = " + oc_table
+                        + ".policy_id " +
                         "AND " + policy_table + ".enforcement_action=? " +
                         " order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value");
                 queryStm.setString(1, querier);
                 queryStm.setString(2, enforcement_action);
             } else {
-                queryStm = connection.prepareStatement("SELECT " + policy_table + ".id, " + policy_table + ".querier, " + policy_table + ".purpose, " +
-                        policy_table + ".enforcement_action," + policy_table + ".inserted_at," + oc_table + ".id, " + oc_table + " .policy_id," + oc_table + ".attribute, " +
+                queryStm = connection.prepareStatement("SELECT " + policy_table + ".id, " + policy_table + ".querier, "
+                        + policy_table + ".purpose, " +
+                        policy_table + ".enforcement_action," + policy_table + ".inserted_at," + oc_table + ".id, "
+                        + oc_table + " .policy_id," + oc_table + ".attribute, " +
                         oc_table + ".attribute_type, " + oc_table + ".operator," + oc_table + ".comp_value " +
                         "FROM " + policy_table + ", " + oc_table +
                         " WHERE " + policy_table + ".id = " + oc_table + ".policy_id " +
@@ -153,7 +163,8 @@ public class PolicyPersistor {
                 queryStm.setString(1, enforcement_action);
             }
             ResultSet rs = queryStm.executeQuery();
-            if (!rs.next()) return null;
+            if (!rs.next())
+                return null;
             String next = null;
             boolean skip = false;
             List<QuerierCondition> querierConditions = new ArrayList<>();
@@ -209,17 +220,20 @@ public class PolicyPersistor {
                 objectConditions.add(oc);
 
                 if (!rs.next()) {
-                    BEPolicy bePolicy = new BEPolicy(id, objectConditions, querierConditions, purpose, action, inserted_at);
+                    BEPolicy bePolicy = new BEPolicy(id, objectConditions, querierConditions, purpose, action,
+                            inserted_at);
                     bePolicies.add(bePolicy);
                     break;
                 }
 
                 next = rs.getString(policy_table + ".id");
                 if (!id.equalsIgnoreCase(next)) {
-                    BEPolicy bePolicy = new BEPolicy(id, objectConditions, querierConditions, purpose, action, inserted_at);
+                    BEPolicy bePolicy = new BEPolicy(id, objectConditions, querierConditions, purpose, action,
+                            inserted_at);
                     bePolicies.add(bePolicy);
                     skip = false;
-                } else skip = true;
+                } else
+                    skip = true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -243,12 +257,14 @@ public class PolicyPersistor {
         }
         PreparedStatement queryStm = null;
         try {
-            queryStm = connection.prepareStatement("SELECT " + policy_table + ".id, " + policy_table + ".querier, " + policy_table + ".purpose, " +
-                    policy_table + ".enforcement_action," + policy_table + ".inserted_at," + oc_table + ".id, " + oc_table + " .policy_id," + oc_table + ".attribute, " +
-                    oc_table + ".attribute_type, " + oc_table + ".operator," + oc_table + ".comp_value " +
-                    "FROM " + policy_table + ", " + oc_table +
-                    " WHERE " + policy_table + ".id = " + oc_table + ".policy_id " +
-                    "AND " + policy_table + ".id=? ");
+            queryStm = connection.prepareStatement(
+                    "SELECT " + policy_table + ".id, " + policy_table + ".querier, " + policy_table + ".purpose, " +
+                            policy_table + ".enforcement_action," + policy_table + ".inserted_at," + oc_table + ".id, "
+                            + oc_table + " .policy_id," + oc_table + ".attribute, " +
+                            oc_table + ".attribute_type, " + oc_table + ".operator," + oc_table + ".comp_value " +
+                            "FROM " + policy_table + ", " + oc_table +
+                            " WHERE " + policy_table + ".id = " + oc_table + ".policy_id " +
+                            "AND " + policy_table + ".id=? ");
             queryStm.setString(1, policy_id);
             ResultSet rs = queryStm.executeQuery();
             boolean skip = false;

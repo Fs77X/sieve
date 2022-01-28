@@ -99,11 +99,13 @@ public class PolicyConstants {
 
             ATTRIBUTES = tableConfig.getList(String.class, "attrs");
             INDEXED_ATTRIBUTES = tableConfig.getList(String.class, "indexed_attrs");
+            System.out.println(INDEXED_ATTRIBUTES);
             RANGED_ATTRIBUTES = tableConfig.getList(String.class, "range_attrs");
             ATTRIBUTE_INDEXES = new HashMap<>();
             for (int i = 0; i < ATTRIBUTES.size(); i++) {
                 ATTRIBUTE_INDEXES.put(ATTRIBUTES.get(i), tableConfig.getString(ATTRIBUTES.get(i)));
             }
+            System.out.println(ATTRIBUTE_INDEXES);
         }
         catch (ConfigurationException cex) {
             cex.printStackTrace();

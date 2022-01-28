@@ -74,10 +74,14 @@ public class PolicyScaler {
             users = new ArrayList<>(Arrays.asList(22636, 22995, 32467, 15007, 18575, 23422, 26801, 11815, 18094, 2039));
             xpoints = new ArrayList<>(Arrays.asList(75, 100, 125, 150, 175, 200, 225, 250, 275, 300));
         }
-        else  if(PolicyConstants.TABLE_NAME.equalsIgnoreCase(PolicyConstants.MALL_TABLE)) {
+        else if(PolicyConstants.TABLE_NAME.equalsIgnoreCase(PolicyConstants.MALL_TABLE)) {
             users = new ArrayList<>(Arrays.asList(8, 7, 29, 23, 28));
             xpoints = new ArrayList<>(Arrays.asList(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200));
         }
+        // else if(PolicyConstants.TABLE_NAME.equalsIgnoreCase(PolicyConstants.GDPR_TABLE)){
+        //     users = new ArrayList<>(Arrays.asList(8, 7, 29, 23, 28));
+        //     xpoints = new ArrayList<>(Arrays.asList(10, 20, 30));
+        // }
 
         PolicyPersistor polper = PolicyPersistor.getInstance();
         for (Integer user : users) {
