@@ -127,6 +127,49 @@ public class GuardExp {
      * Creates the complete guarded query string with or without hints depending on DBMS_CHOICE value
      * @return query string
      */
+    public String createQueryWithUnionMid(boolean remove_duplicate, String queryType){
+        StringBuilder queryExp = new StringBuilder();
+        String delim = "";
+        if (PolicyConstants.DBMS_CHOICE.equalsIgnoreCase(PolicyConstants.MYSQL_DBMS)) { //adding force index hints
+            for (GuardPart gp : this.guardParts) {
+                queryExp.append(delim);
+                queryExp.append(PolicyConstants.SELECT_ALL)
+                        .append(" force index (")
+                        .append(PolicyConstants.ATTRIBUTE_INDEXES.get(gp.getGuard().getAttribute()))
+                        .append(" ) Where")
+                        .append(gp.getGuard().print())
+                        .append(PolicyConstants.CONJUNCTION);
+                queryExp.append(gp.getGuardPartition().createQueryFromPolices());
+                delim = remove_duplicate? PolicyConstants.UNION: PolicyConstants.UNION_ALL;
+            }
+        }
+        else if (PolicyConstants.DBMS_CHOICE.equalsIgnoreCase(PolicyConstants.PGSQL_DBMS)) { //no hints added
+            for (GuardPart gp: this.guardParts) {
+                queryExp.append(delim);
+                if (queryType.equals(("SELECT"))) {
+                    queryExp.append(PolicyConstants.SELECT_ALL_WHERE)
+                        .append(gp.getGuard().print());
+                }
+                if (queryType.equals("DELETE")) {
+                    queryExp.append(PolicyConstants.SELECT_ID_WHERE)
+                        .append(gp.getGuard().print());
+                }
+                
+                queryExp.append(PolicyConstants.CONJUNCTION);
+                queryExp.append(gp.getGuardPartition().createQueryFromPolices());
+                delim = remove_duplicate? PolicyConstants.UNION: PolicyConstants.UNION_ALL;
+            }
+        }
+        else {
+            throw new PolicyEngineException("Unknown DBMS");
+        }
+        return  queryExp.toString();
+    }
+
+    /**
+     * Creates the complete guarded query string with or without hints depending on DBMS_CHOICE value
+     * @return query string
+     */
     public String createQueryWithUnion(boolean remove_duplicate){
         StringBuilder queryExp = new StringBuilder();
         String delim = "";
@@ -229,6 +272,30 @@ public class GuardExp {
         }
         queryExp.append(")");
         return queryExp.toString();
+    }
+
+        /**
+     * Sieve rewrite which only uses the guards and not the UDF.
+     * Choices between using CTE versus no cte, Union versus OR
+     * @param cte
+     * @param union
+     * @return
+     */
+    public String queryRewriteMiddleWare(boolean cte, boolean union, String queryType) {
+        String query = null;
+        if (cte) query = "WITH polEval as (";
+        if (queryType.equals("DELETE")) query = "DELETE from mall_observation WHERE id IN (";
+        if (queryType.equals("UPDATE")) query = "";
+        // if (queryType.equals("DELETE")) {
+        //     query += "DELETE from mall_observation WHERE id in (";
+        // }
+        if (union)
+            query += createQueryWithUnionMid(true, queryType); //Change it to false to have UNION ALL
+        else
+            query += PolicyConstants.SELECT_ALL_WHERE + createQueryWithOR();
+        if(cte && queryType.equals("SELECT")) query += ") SELECT * from polEval";
+        if(queryType.equals("DELETE")) query += ")";
+        return query;
     }
 
     /**

@@ -8,6 +8,7 @@ import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.boot.SpringApplication;
+import edu.uci.ics.tippers.execution.MiddleWare.ops;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Sieve {
@@ -54,6 +55,9 @@ public class Sieve {
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
+        // ops operation = new ops();
+        // operation.get();
+        // operation.delete();
         if (!MIDDLEWARE_MODE) {
             System.out.println("Running Sieve on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 + PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");

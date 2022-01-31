@@ -32,6 +32,8 @@ public class PolicyConstants {
     public static String TIMESTAMP_FORMAT;
 
     public static String SELECT_ALL;
+    public static String DELETE;
+    public static String SELECT_ID_WHERE;
     public static String SELECT_ALL_WHERE;
 
     //Database related
@@ -76,7 +78,9 @@ public class PolicyConstants {
             TABLE_NAME = datasetConfig.getString("table_name");
 
             SELECT_ALL = "Select * from " + PolicyConstants.TABLE_NAME + " ";
+            DELETE = "DELETE from " + PolicyConstants.TABLE_NAME + " WHERE ";
             SELECT_ALL_WHERE = "Select * from " + PolicyConstants.TABLE_NAME + " where ";
+            SELECT_ID_WHERE = "SELECT id from " + PolicyConstants.TABLE_NAME + " where ";
 
             Configuration dbmsConfig = configs.properties("config/dbms/" + DBMS_CHOICE + ".properties");
             INFINTIY = dbmsConfig.getLong("infinity");

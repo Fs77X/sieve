@@ -27,6 +27,22 @@ public class QueryExecutor {
         Future<QueryResult> future = null;
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = statement.executeQuery(query);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            System.out.println("Column number: " + columnsNumber);
+            
+            int counter = 0;
+            while (rs.next()) {
+                // for (int i = 1; i <= columnsNumber; i++) {
+                //     if (i > 1) System.out.print(",  ");
+                //     String columnValue = rs.getString(i);
+                //     System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                // }
+                // System.out.println("");
+                counter++;
+            }
+            System.out.println ("Row amount: " + counter);
             Executor queryExecutor = new Executor(statement, query, queryResult);
             future = executor.submit(queryExecutor);
             queryResult = future.get(timeout, TimeUnit.MILLISECONDS);

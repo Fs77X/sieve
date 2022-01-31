@@ -110,6 +110,22 @@ public class QueryManager {
      * @throws PolicyEngineException
      */
 
+    public Duration runQuery(String queryString) throws PolicyEngineException {
+        try {
+            QueryResult queryResult = new QueryResult();
+            return queryExecutor.runWithThread(queryString, queryResult).getTimeTaken();
+        } catch (Exception e) {
+            throw new PolicyEngineException("Error Running Query");
+        }
+    }
+
+    /**
+     * Compute the cost by execution time of the query
+     * @param predicates
+     * @return
+     * @throws PolicyEngineException
+     */
+
     public Duration runTimedQuery(String predicates) throws PolicyEngineException {
         try {
             QueryResult queryResult = new QueryResult();

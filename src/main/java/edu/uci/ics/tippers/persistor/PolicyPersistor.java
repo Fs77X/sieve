@@ -131,6 +131,7 @@ public class PolicyPersistor {
         PreparedStatement queryStm = null;
         try {
             if (querier != null) {
+                // here we want to add ttl for policy so that it filters out expired data too!
                 queryStm = connection.prepareStatement("SELECT " + policy_table + ".id as \"" + policy_table + ".id\","
                         +
                         policy_table + ".querier as \"" + policy_table + ".querier\"," +
