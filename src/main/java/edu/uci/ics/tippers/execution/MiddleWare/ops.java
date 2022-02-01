@@ -1,5 +1,6 @@
 package edu.uci.ics.tippers.execution.MiddleWare;
 import edu.uci.ics.tippers.common.PolicyConstants;
+import edu.uci.ics.tippers.dbms.MallData;
 import edu.uci.ics.tippers.dbms.QueryManager;
 import edu.uci.ics.tippers.dbms.QueryResult;
 // import edu.uci.ics.tippers.execution.ExpResult;
@@ -16,7 +17,10 @@ import edu.uci.ics.tippers.fileop.Writer;
 public class ops {
     private static QueryManager queryManager;
 
-    public void get(String querier, String prop, String info) {
+    public MallData[] get(String querier, String prop, String info) {
+        /*
+        * TODO: Get query results into a class array format and return it
+        */
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
@@ -28,12 +32,15 @@ public class ops {
         GuardExp guardExp = gh.create();
         String guard_query_union = guardExp.queryRewrite(true, true);
         // System.out.println(guard_query_union);
-        Duration execResultUnion = queryManager.runQuery(guard_query_union);
-        System.out.println("Took: " + execResultUnion.toString() + " ms");
-        return;
+        MallData[] mall = queryManager.runMiddleWareQuery(guard_query_union);
+        // System.out.println("Took: " + execResultUnion.toString() + " ms");
+        return mall;
 
     }
     public void delete() {
+        /*
+        * TODO: Do what I did in get but in delete
+        */
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");

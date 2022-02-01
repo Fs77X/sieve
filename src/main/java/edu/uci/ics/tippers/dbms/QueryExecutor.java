@@ -7,6 +7,8 @@ import org.apache.commons.dbutils.DbUtils;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.*;
 
 public class QueryExecutor {
@@ -20,6 +22,31 @@ public class QueryExecutor {
         this.timeout = timeout + PolicyConstants.MAX_DURATION.toMillis();
     }
 
+    public MallData[] getQuery(String query) {
+        LinkedList<MallData> mallData = new LinkedList<MallData>();
+        Statement statement = null;
+        try{
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = statement.executeQuery(query);
+            while(rs.next()) {
+                MallData newMD = new MallData(rs.getString("id"), rs.getString("shop_name"), rs.getDate("obs_date"), rs.getTime("obs_time"), rs.getString("user_interest"), rs.getInt("device_id"));
+                mallData.add(newMD);
+            }
+            Iterator<MallData> i = mallData.iterator();
+            MallData[] res = new MallData[mallData.size()];
+            Integer resCount = 0;
+            while (i.hasNext()) {
+                res[resCount] = i.next();
+                resCount++;
+            }
+            return res;
+        } catch (SQLException ex) {
+            cancelStatement(statement, ex);
+            ex.printStackTrace();
+            throw new PolicyEngineException("Failed to query the database. " + ex);
+        }
+        
+    }
     public QueryResult runWithThread(String query, QueryResult queryResult) {
 
         Statement statement = null;

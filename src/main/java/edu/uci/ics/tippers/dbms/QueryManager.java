@@ -103,13 +103,20 @@ public class QueryManager {
         }
     }
 
+    public MallData[] runMiddleWareQuery(String queryString) throws PolicyEngineException {
+        try {
+            return queryExecutor.getQuery(queryString);
+        } catch (Exception e) {
+            throw new PolicyEngineException("Error Running Query");
+        }
+    }
+
     /**
      * Compute the cost by execution time of the query
      * @param predicates
      * @return
      * @throws PolicyEngineException
      */
-
     public Duration runQuery(String queryString) throws PolicyEngineException {
         try {
             QueryResult queryResult = new QueryResult();
