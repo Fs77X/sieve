@@ -28,7 +28,7 @@ var ENFORCEMENT_ACTION string = "allow"
 
 func generateMData() mData {
 	var newMData mData
-	newMData.TTL = time.Now().Unix() + int64(rand.Intn(99970) + 30)
+	newMData.TTL = time.Now().Unix() + int64(rand.Intn(97000) + 3000)
 	newMData.Purpose = "purpose" + strconv.Itoa(rand.Intn(99) + 1)
 	newMData.Origin = "src" + strconv.Itoa(rand.Intn(99) + 1)
 	newMData.Objection = "obj" + strconv.Itoa(rand.Intn(99) + 1)

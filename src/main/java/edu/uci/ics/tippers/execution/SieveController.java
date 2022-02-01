@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import edu.uci.ics.tippers.execution.MiddleWare.mget_obj;
 import edu.uci.ics.tippers.execution.MiddleWare.Message;
+import edu.uci.ics.tippers.execution.MiddleWare.ops;
 @RestController
 public class SieveController {
 
@@ -23,6 +24,11 @@ public class SieveController {
 		System.out.println(getobj);
 		System.out.println(getobj.getProp()[0].getProp());
 		System.out.println(getobj.getProp()[0].getInfo());
+		String querier = getobj.getId()[0];
+		String prop = getobj.getProp()[0].getProp();
+		String info = getobj.getProp()[0].getInfo();
+		ops op = new ops();
+		op.get(querier, prop, info);
 		Message msg = new Message("Succ");
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
