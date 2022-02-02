@@ -123,7 +123,6 @@ public class PolicyPersistor {
         Date currentDate = new Date();
         long epoch = currentDate.getTime() / 1000;
         int dateEpoch = (int) epoch;
-        System.out.println(dateEpoch);
         String policy_table = null, oc_table = null;
         if (querier_type.equalsIgnoreCase("user")) {
             policy_table = "USER_POLICY";

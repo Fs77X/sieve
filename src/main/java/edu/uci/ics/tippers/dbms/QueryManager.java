@@ -103,6 +103,13 @@ public class QueryManager {
         }
     }
 
+    public Integer runMidDelMod(String queryString) throws PolicyEngineException {
+        try {
+            return queryExecutor.runDelModQuery(queryString);
+        } catch (Exception e) {
+            throw new PolicyEngineException("Error Running Query");
+        }
+    }
     public MallData[] runMiddleWareQuery(String queryString) throws PolicyEngineException {
         try {
             return queryExecutor.getQuery(queryString);
