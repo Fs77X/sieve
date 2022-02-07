@@ -8,7 +8,6 @@ import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.boot.SpringApplication;
-import edu.uci.ics.tippers.execution.MiddleWare.ops;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Sieve {
@@ -45,25 +44,25 @@ public class Sieve {
             policyScaler.runExperiment();
         }
     }
-    public static void main(String[] args) {
-        PolicyConstants.initialize();
-        boolean MIDDLEWARE_MODE = false;
-        Configurations configs = new Configurations();
-         try {
-            Configuration datasetConfig = configs.properties("config/general.properties");
-            MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-        }
-        // ops operation = new ops();
-        // operation.get();
-        // operation.delete();
-        if (!MIDDLEWARE_MODE) {
-            System.out.println("Running Sieve on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
-                + PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
-            runSieve();
-        } else {
-            SpringApplication.run(Sieve.class, args);
-        }
-    }
+    // public static void main(String[] args) {
+    //     PolicyConstants.initialize();
+    //     boolean MIDDLEWARE_MODE = false;
+    //     Configurations configs = new Configurations();
+    //      try {
+    //         Configuration datasetConfig = configs.properties("config/general.properties");
+    //         MIDDLEWARE_MODE = datasetConfig.getBoolean("middleware_mode");
+    //     } catch (ConfigurationException e) {
+    //         e.printStackTrace();
+    //     }
+    //     // ops operation = new ops();
+    //     // operation.get();
+    //     // operation.delete();
+    //     if (!MIDDLEWARE_MODE) {
+    //         System.out.println("Running Sieve on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
+    //             + PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
+    //         runSieve();
+    //     } else {
+    //         SpringApplication.run(Sieve.class, args);
+    //     }
+    // }
 }

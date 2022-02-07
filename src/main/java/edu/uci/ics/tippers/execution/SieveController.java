@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import edu.uci.ics.tippers.execution.MiddleWare.mget_obj;
 import edu.uci.ics.tippers.dbms.MallData;
@@ -14,6 +15,11 @@ import edu.uci.ics.tippers.execution.MiddleWare.Message;
 import edu.uci.ics.tippers.execution.MiddleWare.ops;
 @RestController
 public class SieveController {
+
+	@GetMapping(value="/mget_entry", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Message> mgetpersonalData(@RequestBody String dog) {
+		return null;
+	}
 
 	@PostMapping(value = "/mget_obj", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<Message> mget(@RequestBody mget_obj getobj) {
