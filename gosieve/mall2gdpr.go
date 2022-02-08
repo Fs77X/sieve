@@ -50,6 +50,12 @@ func insertPolicy(listOfIds []string, db *sql.DB) {
 	}
 }
 
+func clearUserPolicy(db *sql.DB) {
+	_, err := db.Query("DELETE FROM user_policy")
+	checkErr(err)
+	fmt.Println("cleared user policy")
+}
+
 func yoinkUUID(db *sql.DB) []string{
 	rows, err := db.Query("SELECT distinct policy_id from user_policy_object_condition;")
 	checkErr(err)
@@ -68,6 +74,7 @@ func yoinkUUID(db *sql.DB) []string{
 // INSERT into user_policy() VALUES()
 func main(){
 	db := setupDB()
+	clearUserPolicy(db)
 	listOfIds := yoinkUUID(db)
 	insertPolicy(listOfIds, db)
 	fmt.Println("DONE :)")

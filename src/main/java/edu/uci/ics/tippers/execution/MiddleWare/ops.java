@@ -18,7 +18,9 @@ public class ops {
     private static QueryManager queryManager;
 
     public MallData[] getpersonalData(String device_id) {
-        return null;
+        queryManager = new QueryManager();
+        String query = "SELECT * from mall_observation where device_id = " + device_id;
+        return queryManager.runMiddleWareQuery(query);
     } 
     public MallData[] get(String querier, String prop, String info) {
         /*
