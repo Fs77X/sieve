@@ -16,7 +16,38 @@ import edu.uci.ics.tippers.fileop.Writer;
 
 public class ops {
     private static QueryManager queryManager;
-
+    private int removeUserData(String device_id) {
+        String query = "DELETE from mall_observation WHERE device_id = " + device_id;
+        return queryManager.runMidDelMod(query);
+    }
+    private int removeUserOC(String[] policy_id) {
+        StringBuilder q = new StringBuilder("DELETE from user_policy_object_condition WHERE ");
+        for (int i = 0; i < policy_id.length; i++) {
+            q.append("policy_id = ").append(policy_id[i]);
+            if (i == policy_id.length-1) q.append(" AND ");
+        }
+        return queryManager.runMidDelMod(q.toString());
+    }
+    private int removeUserPolicy(String[] policy_id) {
+        StringBuilder q = new StringBuilder("DELETE from user_policy WHERE ");
+        for (int i = 0; i < policy_id.length; i++) {
+            q.append("id = ").append(policy_id[i]);
+            if (i == policy_id.length-1) q.append(" AND ");
+        }
+        return queryManager.runMidDelMod(q.toString());
+    }
+    private String[] getPolicyId(String device_id) {
+        queryManager = new QueryManager();
+        String query = "SELECT UNIQUE policy_id from user_policy_object_condition WHERE attribute = device_id AND comp_value = " + device_id;
+        return queryManager.getPolId(query);
+    }
+    public int deletePersonalData(String device_id) {
+        String[] polId = getPolicyId(device_id);
+        int status = removeUserPolicy(polId);
+        status = removeUserOC(polId);
+        status = removeUserData(device_id);
+        return status;
+    }
     public MallData[] getpersonalData(String device_id) {
         queryManager = new QueryManager();
         String query = "SELECT * from mall_observation where device_id = " + device_id;

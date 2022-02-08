@@ -1,5 +1,6 @@
 package edu.uci.ics.tippers.execution;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,10 +43,6 @@ public class SieveController {
 	}
 	@PostMapping(value = "/mdelete_UserMetaobj", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<Message> mdelete_UserMetaObj(@RequestBody mget_obj getobj) {
-		// System.out.println(getobj.getId()[0]);
-		// System.out.println(getobj);
-		// System.out.println(getobj.getProp()[0].getProp());
-		// System.out.println(getobj.getProp()[0].getInfo());
 		String querier = getobj.getId()[0];
 		String prop = getobj.getProp()[0].getProp();
 		String info = getobj.getProp()[0].getInfo();
@@ -58,5 +55,22 @@ public class SieveController {
 		Message msg = new Message("Fail, bad entry", null);
 		return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
 		
+	}
+
+	@DeleteMapping(value = "/mdelete_obj", produces = "application/json")
+	public ResponseEntity<Message> mdelete_obj(@RequestParam(value="key") String key){
+		ops op = new ops();
+		int status = op.deletePersonalData(key);
+		if (status == 0) {
+			Message msg = new Message("Succ", null);
+			return new ResponseEntity<>(msg, HttpStatus.OK);
+		}
+		Message msg = new Message("Fail, bad entry", null);
+		return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+		// SELECT UNIQUE policy_id from user_policy_object_condition WHERE attribute = device_id AND comp_value = ""
+		// DELETE from user_policy where id = ...
+		// DELETE from user_policy_object_condition where policy id = ...
+		// DELETE from mall_observation where device_id = device_id
+
 	}
 }

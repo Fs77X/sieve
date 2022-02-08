@@ -110,6 +110,14 @@ public class QueryManager {
             throw new PolicyEngineException("Error Running Query");
         }
     }
+    public String[] getPolId(String queryString) throws PolicyEngineException{
+        try {
+            return queryExecutor.getPolicyId(queryString);
+        } catch (Exception e) {
+            throw new PolicyEngineException("Error Running Query");
+        }
+    }
+
     public MallData[] runMiddleWareQuery(String queryString) throws PolicyEngineException {
         try {
             return queryExecutor.getQuery(queryString);
