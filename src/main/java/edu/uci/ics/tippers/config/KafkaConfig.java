@@ -3,10 +3,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.ser.std.StringSerializer;
 
 // import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +16,28 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.messaging.MessageChannel;
 
 import edu.uci.ics.tippers.model.middleware.mget_obj;
+import edu.uci.ics.tippers.dbms.MallData;
 import edu.uci.ics.tippers.model.middleware.LeTime;
+import edu.uci.ics.tippers.model.middleware.Message;
 @EnableKafka
 @Configuration
 public class KafkaConfig {
+    @Bean
+    public ProducerFactory<String, Message> producerFactory() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,"edu.uci.ics.tippers.config.MessageSerializer");
+        return new DefaultKafkaProducerFactory<String,Message>(config);
+        //<String, Message>
+    }
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configs = new HashMap<>();
@@ -71,6 +88,10 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, LeTime> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(leTimeConsumerFactory());
         return factory;
+    }
+    @Bean
+    public KafkaTemplate<String, Message> kafkaTemplate() {
+        return new KafkaTemplate<String, Message>(producerFactory());
     }
 
 }
