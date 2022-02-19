@@ -5,6 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "express.js": "^1.0.0",
-    "kafkajs": "^1.16.0"
+    "kafka-node": "^5.0.0",
+    "kafkajs": "^1.16.0",
+    "node-rdkafka": "^2.12.0"
   }
 }
