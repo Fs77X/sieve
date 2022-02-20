@@ -26,12 +26,20 @@ public class ops {
         /*
         * TODO: Get query results into a class array format and return it
         */
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
         PolicyPersistor polper = PolicyPersistor.getInstance();
         List<BEPolicy> bePolicies = polper.retrievePoliciesMid(querier, PolicyConstants.USER_INDIVIDUAL, PolicyConstants.ACTION_ALLOW, prop, info);
         if (bePolicies == null) {
+            System.out.println("yahoey");
+            System.out.println("yahoey");
+            System.out.println("yahoey");
+            System.out.println("yahoey");
+            System.out.println("yahoey");
+            System.out.println("yahoey");
+            System.out.println("yahoey");
             return null;
         }
         BEExpression beExpression = new BEExpression(bePolicies);
@@ -41,6 +49,7 @@ public class ops {
         String guard_query_union = guardExp.queryRewrite(true, true);
         // System.out.println(guard_query_union);
         MallData[] mall = queryManager.runMiddleWareQuery(guard_query_union);
+        System.out.println(mall.length);
         // System.out.println("Took: " + execResultUnion.toString() + " ms");
         return mall;
 

@@ -16,6 +16,8 @@ import edu.uci.ics.tippers.dbms.MallData;
 import edu.uci.ics.tippers.model.middleware.LeTime;
 import edu.uci.ics.tippers.model.middleware.Message;
 import edu.uci.ics.tippers.model.middleware.mget_obj;
+import edu.uci.ics.tippers.producer.ProduceResults;
+import edu.uci.ics.tippers.execution.MiddleWare.ops;
 
 @Service
 public class KafkaConsumer {
@@ -31,6 +33,25 @@ public class KafkaConsumer {
     public void consumemget_obj(mget_obj qm) {
         System.out.println("Consume json " + qm);
     }
+
+    @KafkaListener(topics = "query", groupId = "group_json", containerFactory = "mget_objKakfaListenerFactory")
+    public void executeQuery(mget_obj qm) {
+        String querier = qm.getId();
+        String prop = qm.getProp();
+        String info = qm.getInfo();
+        System.out.println("querier: " + querier + " prop: "+ prop + " info: " + info);
+        ops op = new ops();
+        MallData[] res = op.get(querier, prop, info);
+        Message msg;
+        if (res == null) {
+            msg = new Message("Fail, data not found", res);
+        } else {
+            msg = new Message("Succ", res);
+        }
+        ProduceResults pr = new ProduceResults();
+        pr.sendResults(msg);
+    }
+
     @KafkaListener(topics="letime", groupId = "group_json", containerFactory = "leTimeKafkaListenerFactory")
     public void checkTime(LeTime lt) {
         System.out.println(lt.getTime());

@@ -5,8 +5,13 @@ Consumer = kafka.Consumer
 client = new kafka.KafkaClient()
 const prod = async () => {
     producer = new Producer(client)
+    qr = {
+        id: "7",
+        prop: "purpose",
+        info: "purpose79"
+    }
     payloads = [
-        { topic: 'letime', messages: JSON.stringify({ time: new Date().getTime() }) }
+        { topic: 'query', messages: JSON.stringify(qr) }
     ];
     const producerPromise = new Promise((resolve, reject) => {
       producer.on('ready', () => {

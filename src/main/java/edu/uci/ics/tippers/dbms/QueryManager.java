@@ -18,7 +18,9 @@ public class QueryManager {
     private final QueryExecutor queryExecutor;
 
     public QueryManager(){
+        System.out.println("WEEWOOO");
         connection = PolicyConstants.getDBMSConnection();
+        System.out.println("HEEEE");
         queryExecutor = new QueryExecutor(connection, PolicyConstants.MAX_DURATION.getSeconds());
     }
 
