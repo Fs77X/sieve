@@ -51,17 +51,18 @@ const consom = async () => {
     );
     const consumerPromise = new Promise((resolve, reject) => {
         consumer.on('message', async function (message) {
+            console.log(message.value)
             resolve(JSON.parse(message.value));
         });
     })
     await consumerPromise;
-    consumerPromise.then((data) => console.log(data))
+    // consumerPromise.then((data) => console.log(data))
     const consoomClose = new Promise((resolve, reject) => {
         consumer.close(true, () => resolve("done okchamp"))
 
     })
     await consoomClose
-    consoomClose.then((str) => console.log(str))
+    // consoomClose.then((str) => console.log(str))
 
 }
 

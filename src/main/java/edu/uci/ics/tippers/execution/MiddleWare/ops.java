@@ -33,13 +33,6 @@ public class ops {
         PolicyPersistor polper = PolicyPersistor.getInstance();
         List<BEPolicy> bePolicies = polper.retrievePoliciesMid(querier, PolicyConstants.USER_INDIVIDUAL, PolicyConstants.ACTION_ALLOW, prop, info);
         if (bePolicies == null) {
-            System.out.println("yahoey");
-            System.out.println("yahoey");
-            System.out.println("yahoey");
-            System.out.println("yahoey");
-            System.out.println("yahoey");
-            System.out.println("yahoey");
-            System.out.println("yahoey");
             return null;
         }
         BEExpression beExpression = new BEExpression(bePolicies);
