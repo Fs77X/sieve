@@ -63,11 +63,17 @@ func yoinkUUID(db *sql.DB) []string{
 	return res
 }
 
+func delOldmData(db *sql.DB) {
+	_, err := db.Query("DELETE FROM user_policy;")
+	checkErr(err)
+}
+
 // TODO: SELECT distinct policy_id from user_policy_object_condition
 // Generate random metadata for each policy_id
 // INSERT into user_policy() VALUES()
 func main(){
 	db := setupDB()
+	delOldmData(db)
 	listOfIds := yoinkUUID(db)
 	insertPolicy(listOfIds, db)
 	fmt.Println("DONE :)")

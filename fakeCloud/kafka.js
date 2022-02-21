@@ -56,13 +56,13 @@ const consom = async () => {
         });
     })
     await consumerPromise;
-    // consumerPromise.then((data) => console.log(data))
+    consumerPromise.then((data) => console.log(data))
     const consoomClose = new Promise((resolve, reject) => {
         consumer.close(true, () => resolve("done okchamp"))
 
     })
     await consoomClose
-    // consoomClose.then((str) => console.log(str))
+    consoomClose.then((str) => console.log(str))
 
 }
 
