@@ -34,6 +34,26 @@ public class QueryExecutor {
             throw new PolicyEngineException("Failed to query the database. " + ex);
         }
     }
+    public String[] getPolicyId(String query) {
+        // String[] polId = new String[];
+        Statement statement = null;
+        try {
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = statement.executeQuery(query);
+            rs.last();
+            String[] polId = new String[rs.getRow()];
+            rs.first();
+            int counter = 0;
+            while (rs.next()) {
+                polId[counter] = rs.getString("policy_id");
+            }
+            return polId;
+        } catch(SQLException ex){
+            cancelStatement(statement, ex);
+            ex.printStackTrace();
+            throw new PolicyEngineException("Failed to query the database. " + ex);
+        }
+    }
     public MallData[] getQuery(String query) {
         LinkedList<MallData> mallData = new LinkedList<MallData>();
         Statement statement = null;

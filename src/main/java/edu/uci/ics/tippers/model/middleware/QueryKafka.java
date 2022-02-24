@@ -2,17 +2,19 @@ package edu.uci.ics.tippers.model.middleware;
 
 // import org.apache.tomcat.jni.Time;
 
-public class mget_obj {
+public class QueryKafka {
     private String id;
     private String prop;
     private String info;
-    public mget_obj() {
+    private String query;
+    public QueryKafka() {
 
     }
-    public mget_obj(String id, String prop, String info) {
+    public QueryKafka(String id, String prop, String info, String query) {
         this.id = id;
         this.prop = prop;
         this.info = info;
+        this.query = query;
     }
     public String getId() {
         return this.id;
@@ -26,11 +28,16 @@ public class mget_obj {
         return this.info;
     }
 
+    public String getQuery() {
+        return this.query;
+    }
+
     @Override public String toString() {
-        StringBuilder sb = new StringBuilder("mget_obj{");
+        StringBuilder sb = new StringBuilder("QueryKafka{");
         sb.append("id: ").append(this.id).append(", ");
         sb.append("prop: ").append(this.prop).append(", ");
-        sb.append("info: ").append(this.info).append("}");
+        sb.append("info: ").append(this.info).append(", ");
+        sb.append("query: ").append(this.query).append("}");
         return sb.toString();
     }
 }

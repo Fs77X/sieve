@@ -22,10 +22,11 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.MessageChannel;
 
-import edu.uci.ics.tippers.model.middleware.mget_obj;
+// import edu.uci.ics.tippers.model.middleware.mget_obj;
 import edu.uci.ics.tippers.dbms.MallData;
 import edu.uci.ics.tippers.model.middleware.LeTime;
 import edu.uci.ics.tippers.model.middleware.Message;
+import edu.uci.ics.tippers.model.middleware.QueryKafka;
 @EnableKafka
 @Configuration
 public class KafkaConfig {
@@ -51,13 +52,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, mget_obj> mgetobjConsumerFactory(){
+    public ConsumerFactory<String, QueryKafka> queryKafkaConsumerFactory(){
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "group_json");
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        return new DefaultKafkaConsumerFactory<String, mget_obj>(configs, new StringDeserializer(), new JsonDeserializer<>(mget_obj.class));
+        return new DefaultKafkaConsumerFactory<String, QueryKafka>(configs, new StringDeserializer(), new JsonDeserializer<>(QueryKafka.class));
     }
     @Bean
     public ConsumerFactory<String, LeTime> leTimeConsumerFactory() {
@@ -77,9 +78,9 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, mget_obj> mget_objKakfaListenerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String, mget_obj>  factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(mgetobjConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, QueryKafka> queryKafkaKakfaListenerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, QueryKafka>  factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(queryKafkaConsumerFactory());
         return factory;
     }
 
