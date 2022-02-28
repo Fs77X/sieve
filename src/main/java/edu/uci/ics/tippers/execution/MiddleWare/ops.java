@@ -17,10 +17,12 @@ import edu.uci.ics.tippers.fileop.Writer;
 public class ops {
     private static QueryManager queryManager;
     private int removeUserData(String device_id) {
+        PolicyConstants.initialize();
         String query = "DELETE from mall_observation WHERE device_id = " + device_id;
         return queryManager.runMidDelMod(query);
     }
     private int removeUserOC(String[] policy_id) {
+        PolicyConstants.initialize();
         StringBuilder q = new StringBuilder("DELETE from user_policy_object_condition WHERE ");
         for (int i = 0; i < policy_id.length; i++) {
             q.append("policy_id = ").append(policy_id[i]);
@@ -29,6 +31,7 @@ public class ops {
         return queryManager.runMidDelMod(q.toString());
     }
     private int removeUserPolicy(String[] policy_id) {
+        PolicyConstants.initialize();
         StringBuilder q = new StringBuilder("DELETE from user_policy WHERE ");
         for (int i = 0; i < policy_id.length; i++) {
             q.append("id = ").append(policy_id[i]);
@@ -37,11 +40,13 @@ public class ops {
         return queryManager.runMidDelMod(q.toString());
     }
     private String[] getPolicyId(String device_id) {
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "SELECT UNIQUE policy_id from user_policy_object_condition WHERE attribute = device_id AND comp_value = " + device_id;
         return queryManager.getPolId(query);
     }
     public int deletePersonalData(String device_id) {
+        PolicyConstants.initialize();
         String[] polId = getPolicyId(device_id);
         int status = removeUserPolicy(polId);
         status = removeUserOC(polId);
@@ -49,14 +54,23 @@ public class ops {
         return status;
     }
     public MallData[] getpersonalData(String device_id) {
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "SELECT * from mall_observation where device_id = " + device_id;
+        return queryManager.runMiddleWareQuery(query);
+    } 
+    public MallData[] getpersonalEntry(String id) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "SELECT * from mall_observation where id = \'" + id +"\'";
+        System.out.println(query);
         return queryManager.runMiddleWareQuery(query);
     } 
     public MallData[] get(String querier, String prop, String info) {
         /*
         * TODO: Get query results into a class array format and return it
         */
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
@@ -80,6 +94,7 @@ public class ops {
         /*
         * TODO: Do what I did in get but in delete
         */
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");
@@ -100,6 +115,7 @@ public class ops {
     }
 
     public void update(){
+        PolicyConstants.initialize();
         queryManager = new QueryManager();
         System.out.println("Running on " + PolicyConstants.DBMS_CHOICE + " at " + PolicyConstants.DBMS_LOCATION + " with "
                 +  PolicyConstants.TABLE_NAME.toLowerCase() + " and " + PolicyConstants.getNumberOfTuples() + " tuples");

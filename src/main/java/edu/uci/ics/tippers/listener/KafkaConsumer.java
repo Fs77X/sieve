@@ -24,6 +24,19 @@ import edu.uci.ics.tippers.execution.MiddleWare.ops;
 public class KafkaConsumer {
     private static final String topic = "results";
 
+    private void mget_objUSR(String querier, String prop, String info) {
+        ops op = new ops();
+        MallData[] res = op.getpersonalData(info);
+        Message msg;
+        if (res == null) {
+            msg = new Message("Fail, data not found", res);
+        } else {
+            msg = new Message("Succ", res);
+        }
+        ProduceResults pr = new ProduceResults();
+        pr.sendResults(msg);
+    }
+
     private void mget_obj(String querier, String prop, String info) {
         ops op = new ops();
         MallData[] res = op.get(querier, prop, info);
@@ -39,7 +52,7 @@ public class KafkaConsumer {
 
     private void mget_entry(String querier, String prop, String info) {
         ops op = new ops();
-        MallData[] res = op.get(querier, prop, info);
+        MallData[] res = op.getpersonalEntry(info);
         ProduceResults pr = new ProduceResults();
         if (res == null) {
             Message msg = new Message("Fail, data not found", null);
@@ -76,6 +89,9 @@ public class KafkaConsumer {
                 break;
             case "mget_entry":
                 mget_entry(querier, prop, info);
+                break;
+            case "mget_objUSR":
+                mget_objUSR(querier, prop, info);
                 break;
             default:
                 System.out.println("uhoh");
