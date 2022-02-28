@@ -63,6 +63,20 @@ public class KafkaConsumer {
         pr.sendResults(msg);
     }
 
+    private void mmodify_obj(String updateKey, String prop, String info) {
+        ops op = new ops();
+        int status = op.updateEntry(updateKey, prop, info);
+        ProduceResults pr = new ProduceResults();
+        Message msg;
+        if (status != 0) {
+            msg = new Message("Fail to update", null); 
+        }
+        else {
+            msg = new Message("Succ", null); 
+        }
+        pr.sendResults(msg);
+    }
+
     @Autowired
     KafkaTemplate<String, Message> kafkaTemplate;
 
@@ -82,6 +96,7 @@ public class KafkaConsumer {
         String prop = qm.getProp();
         String info = qm.getInfo();
         String query = qm.getQuery();
+        String updateKey = qm.getUpdateKey();
         System.out.println("querier: " + querier + " prop: " + prop + " info: " + info + " query: " + query);
         switch (query) {
             case "mget_obj":
@@ -92,6 +107,9 @@ public class KafkaConsumer {
                 break;
             case "mget_objUSR":
                 mget_objUSR(querier, prop, info);
+                break;
+            case "mmodify_obj":
+                mmodify_obj(updateKey, prop, info);
                 break;
             default:
                 System.out.println("uhoh");

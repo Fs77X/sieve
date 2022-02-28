@@ -63,7 +63,6 @@ public class ops {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "SELECT * from mall_observation where id = \'" + id +"\'";
-        System.out.println(query);
         return queryManager.runMiddleWareQuery(query);
     } 
     public MallData[] get(String querier, String prop, String info) {
@@ -112,6 +111,13 @@ public class ops {
         Integer status = queryManager.runMidDelMod(guard_query_union);
         // System.out.print("Took: " + execResultUnion.getTimeTaken().toMillis() + " ms");
         return status;
+    }
+
+    public int updateEntry(String updateKey, String prop, String info) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "UPDATE mall_observation SET " + prop + "= \'" + info + "\' WHERE id = \'" + updateKey + "\';";
+        return queryManager.runMidDelMod(query);
     }
 
     public void update(){

@@ -25,9 +25,9 @@ public class QueryExecutor {
     public Integer runDelModQuery(String query) {
         Statement statement = null;
         try{
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            statement.executeQuery(query);
-            return 200;
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+            return 0;
         } catch (SQLException ex) {
             cancelStatement(statement, ex);
             ex.printStackTrace();
