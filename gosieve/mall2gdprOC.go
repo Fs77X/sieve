@@ -24,6 +24,8 @@ type mData struct {
 	Origin    string `json:"origin"`
 	Objection string `json:"objection"`
 	Sharing   string `json:"sharing"`
+	Device_Id  string `json:"device_id"`
+	Key		  string `json:"key"`
 }
 
 type OC struct {
@@ -42,6 +44,12 @@ type md struct {
 	Obs_Time      string `json:"obs_time"`
 	User_Interest string `json:"user_interest"`
 	Device_Id     int    `json:"device_id"`
+}
+
+type listIds struct {
+	Policy_Id string `json:"policy_id"`
+	Device_Id  int `json:"device_id"`
+	Key		  string `json:"key"`
 }
 
 var counter int = 10000
@@ -98,15 +106,15 @@ func generateOC(id int, uuid string, attribute string, operator string, data md,
 	insertOC(newOC, db)
 }
 
-func insertPolicy(listOfIds []string, db *sql.DB) {
-	for _, id := range listOfIds {
+func insertPolicy(listOfIds []listIds, db *sql.DB) {
+	for _, lID := range listOfIds {
 		gpdrMeta := generateMData()
 		querier := rand.Intn(39) + 1
 		inserted_at := time.Now()
 		_, err := db.Exec(`INSERT INTO user_policy(policy_id, id, querier,
 			purpose, ttl, origin, objection, sharing,
-			enforcement_action, inserted_at)
-			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`, counter, id, querier, gpdrMeta.Purpose, gpdrMeta.TTL, gpdrMeta.Origin, gpdrMeta.Objection, gpdrMeta.Sharing, ENFORCEMENT_ACTION, inserted_at)
+			enforcement_action, inserted_at, device_id, key)
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`, counter, lID.Policy_Id, querier, gpdrMeta.Purpose, gpdrMeta.TTL, gpdrMeta.Origin, gpdrMeta.Objection, gpdrMeta.Sharing, ENFORCEMENT_ACTION, inserted_at, lID.Device_Id, lID.Key)
 		checkErr(err)
 		counter = counter + 1
 	}
@@ -175,11 +183,15 @@ func delOldmData(db *sql.DB) {
 	checkErr(err2)
 }
 
-func generateAllAtributes(data []md, db *sql.DB) []string {
-	var policy_id []string
+func generateAllAtributes(data []md, db *sql.DB) []listIds {
+	var listOfIds []listIds
 	for _, mallData := range data {
 		u1 := uuid.NewV4().String()
-		policy_id = append(policy_id, u1)
+		var newList listIds
+		newList.Policy_Id = u1
+		newList.Device_Id = mallData.Device_Id
+		newList.Key = mallData.Id
+		listOfIds = append(listOfIds, newList)
 		id := counterOC
 		for _, attribute := range attributes {
 			if attribute == "obs_date" || attribute == "obs_time" {
@@ -201,7 +213,7 @@ func generateAllAtributes(data []md, db *sql.DB) []string {
 			}
 		}
 	}
-	return policy_id
+	return listOfIds
 }
 
 // TODO: SELECT distinct policy_id from user_policy_object_condition
@@ -211,9 +223,13 @@ func main() {
 	// generateOC()
 	db := setupDB()
 	// getDate(db)
+	fmt.Println("START DELETE OLD MDATA")
 	delOldmData(db)
+	fmt.Println("DONE DELETE OLD MDATA")
 	mallData := yoinkData(db)
+	fmt.Println("YOINKED DATA")
 	listOfIds := generateAllAtributes(mallData, db)
+	fmt.Println("GENERATED ATTRIBUTES")
 	// listOfIds := yoinkUUID(db)
 	insertPolicy(listOfIds, db)
 	fmt.Println("DONE :)")
