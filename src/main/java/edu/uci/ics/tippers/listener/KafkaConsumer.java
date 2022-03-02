@@ -63,9 +63,43 @@ public class KafkaConsumer {
         pr.sendResults(msg);
     }
 
+    private void mget_metaEntry(String querier, String prop, String info) {
+        ops op = new ops();
+    }
+
+    private void mdelete_obj(String key) {
+        ops op = new ops();
+        int status = op.removeUserEntry(key);
+        ProduceResults pr = new ProduceResults();
+        Message msg;
+        if (status != 0) {
+            msg = new Message("Fail to update", null); 
+        }
+        else {
+            msg = new Message("Succ", null); 
+        }
+        pr.sendResults(msg);
+
+    }
+
     private void mmodify_obj(String updateKey, String prop, String info) {
         ops op = new ops();
         int status = op.updateEntry(updateKey, prop, info);
+        ProduceResults pr = new ProduceResults();
+        Message msg;
+        if (status != 0) {
+            msg = new Message("Fail to update", null); 
+        }
+        else {
+            msg = new Message("Succ", null); 
+        }
+        pr.sendResults(msg);
+    }
+
+    private void mmodify_metaobj(String updateKey, String prop, String info) {
+        ops op = new ops();
+        int status = op.updateMetaEntry(updateKey, prop, info);
+        System.out.println(status);
         ProduceResults pr = new ProduceResults();
         Message msg;
         if (status != 0) {
@@ -110,6 +144,14 @@ public class KafkaConsumer {
                 break;
             case "mmodify_obj":
                 mmodify_obj(updateKey, prop, info);
+                break;
+            case "mmodify_metaobj":
+                mmodify_metaobj(updateKey, prop, info);
+                break;
+            case "mget_metaEntry":
+                break;
+            case "mdelete_obj":
+                mdelete_obj(updateKey);
                 break;
             default:
                 System.out.println("uhoh");

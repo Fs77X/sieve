@@ -1,12 +1,15 @@
 package main
+
 import (
-	"fmt"
-	_ "github.com/lib/pq"
 	"database/sql"
+	"fmt"
 	"math/rand"
-	"time"
 	"strconv"
+	"time"
+
+	_ "github.com/lib/pq"
 )
+
 // Currently hosting db server locally, db credentials below
 const (
 	DB_USER     = "sieve"
@@ -14,9 +17,8 @@ const (
 	DB_NAME     = "sieve"
 )
 
-
 type mData struct {
-	TTL       int64 `json:"TTL"`
+	TTL       int64  `json:"TTL"`
 	Purpose   string `json:"purpose"`
 	Origin    string `json:"origin"`
 	Objection string `json:"objection"`
@@ -28,16 +30,24 @@ var ENFORCEMENT_ACTION string = "allow"
 
 func generateMData() mData {
 	var newMData mData
-	newMData.TTL = time.Now().Unix() + int64(rand.Intn(97000) + 3000)
-	newMData.Purpose = "purpose" + strconv.Itoa(rand.Intn(99) + 1)
-	newMData.Origin = "src" + strconv.Itoa(rand.Intn(99) + 1)
-	newMData.Objection = "obj" + strconv.Itoa(rand.Intn(99) + 1)
-	newMData.Sharing = "shr" + strconv.Itoa(rand.Intn(99) + 1)
+	newMData.TTL = time.Now().Unix() + int64(rand.Intn(97000)+3000)
+	newMData.Purpose = "purpose" + strconv.Itoa(rand.Intn(99)+1)
+	newMData.Origin = "src" + strconv.Itoa(rand.Intn(99)+1)
+	newMData.Objection = "obj" + strconv.Itoa(rand.Intn(99)+1)
+	newMData.Sharing = "shr" + strconv.Itoa(rand.Intn(99)+1)
 	return newMData
 }
 
+func refreshTTL(listOfIds []string, db *sql.DB) {
+	for _, id := range listOfIds {
+		ttl := time.Now().Unix() + int64(rand.Intn(97000)+3000)
+		_, err := db.Exec(`UPDATE user_policy SET ttl = $1 WHERE policy_id = $2`, ttl, id)
+		checkErr(err)
+	}
+}
+
 func insertPolicy(listOfIds []string, db *sql.DB) {
-	for _, id := range listOfIds{
+	for _, id := range listOfIds {
 		gpdrMeta := generateMData()
 		querier := rand.Intn(39) + 1
 		inserted_at := time.Now()
@@ -50,7 +60,7 @@ func insertPolicy(listOfIds []string, db *sql.DB) {
 	}
 }
 
-func yoinkUUID(db *sql.DB) []string{
+func yoinkUUID(db *sql.DB) []string {
 	rows, err := db.Query("SELECT distinct policy_id from user_policy_object_condition;")
 	checkErr(err)
 	var res []string
@@ -63,6 +73,19 @@ func yoinkUUID(db *sql.DB) []string{
 	return res
 }
 
+func yoinkMDKey(db *sql.DB) []string {
+	var res []string
+	rows, err := db.Query("SELECT policy_id from user_policy;")
+	checkErr(err)
+	for rows.Next() {
+		var key string
+		err1 := rows.Scan(&key)
+		checkErr(err1)
+		res = append(res, key)
+	}
+	return res
+}
+
 func delOldmData(db *sql.DB) {
 	_, err := db.Query("DELETE FROM user_policy;")
 	checkErr(err)
@@ -71,11 +94,13 @@ func delOldmData(db *sql.DB) {
 // TODO: SELECT distinct policy_id from user_policy_object_condition
 // Generate random metadata for each policy_id
 // INSERT into user_policy() VALUES()
-func main(){
+func main() {
 	db := setupDB()
-	delOldmData(db)
-	listOfIds := yoinkUUID(db)
-	insertPolicy(listOfIds, db)
+	// delOldmData(db)
+	listOfIds := yoinkMDKey(db)
+	fmt.Println(len(listOfIds))
+	refreshTTL(listOfIds, db)
+	// insertPolicy(listOfIds, db)
 	fmt.Println("DONE :)")
 
 }

@@ -21,6 +21,27 @@ public class ops {
         String query = "DELETE from mall_observation WHERE device_id = " + device_id;
         return queryManager.runMidDelMod(query);
     }
+
+    public String[] getPolicyIdFromEntry(String key) {
+        String query = "SELECT id from user_policy WHERE key = \'" + key + "\';";
+        queryManager = new QueryManager();
+        return queryManager.getPolId(query);
+    }
+
+    public int removeUserEntry(String key) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "DELETE from mall_observation WHERE id = \'" + key + "\';";
+        int status = queryManager.runMidDelMod(query);
+        // get polid first, then delete
+        String[] polid = getPolicyIdFromEntry(key);
+        query = "DELETE from user_policy WHERE key = \'" + key + "\';";
+        status = queryManager.runMidDelMod(query);
+        query = "DELETE from user_policy_object_condition WHERE policy_id = \'" + polid[0] + "\';";
+        status = queryManager.runMidDelMod(query);
+        return status;
+    }
+
     private int removeUserOC(String[] policy_id) {
         PolicyConstants.initialize();
         StringBuilder q = new StringBuilder("DELETE from user_policy_object_condition WHERE ");
@@ -39,7 +60,7 @@ public class ops {
         }
         return queryManager.runMidDelMod(q.toString());
     }
-    private String[] getPolicyId(String device_id) {
+    private String[] getPolicyIdFromUsr(String device_id) {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "SELECT UNIQUE policy_id from user_policy_object_condition WHERE attribute = device_id AND comp_value = " + device_id;
@@ -47,7 +68,7 @@ public class ops {
     }
     public int deletePersonalData(String device_id) {
         PolicyConstants.initialize();
-        String[] polId = getPolicyId(device_id);
+        String[] polId = getPolicyIdFromUsr(device_id);
         int status = removeUserPolicy(polId);
         status = removeUserOC(polId);
         status = removeUserData(device_id);
@@ -117,6 +138,14 @@ public class ops {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "UPDATE mall_observation SET " + prop + "= \'" + info + "\' WHERE id = \'" + updateKey + "\';";
+        return queryManager.runMidDelMod(query);
+    }
+
+    public int updateMetaEntry(String updateKey, String prop, String info) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "UPDATE user_policy SET " + prop + "= \'" + info + "\' WHERE policy_id = \'" + updateKey + "\';";
+        System.out.println(query);
         return queryManager.runMidDelMod(query);
     }
 

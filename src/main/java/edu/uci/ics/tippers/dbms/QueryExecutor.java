@@ -42,10 +42,12 @@ public class QueryExecutor {
             ResultSet rs = statement.executeQuery(query);
             rs.last();
             String[] polId = new String[rs.getRow()];
-            rs.first();
+            rs.beforeFirst();
             int counter = 0;
             while (rs.next()) {
-                polId[counter] = rs.getString("policy_id");
+                String polcid = rs.getString("id");
+                polId[counter] = polcid;
+                counter = counter + 1;
             }
             return polId;
         } catch(SQLException ex){

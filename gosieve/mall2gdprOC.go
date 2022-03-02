@@ -24,8 +24,8 @@ type mData struct {
 	Origin    string `json:"origin"`
 	Objection string `json:"objection"`
 	Sharing   string `json:"sharing"`
-	Device_Id  string `json:"device_id"`
-	Key		  string `json:"key"`
+	Device_Id string `json:"device_id"`
+	Key       string `json:"key"`
 }
 
 type OC struct {
@@ -48,8 +48,8 @@ type md struct {
 
 type listIds struct {
 	Policy_Id string `json:"policy_id"`
-	Device_Id  int `json:"device_id"`
-	Key		  string `json:"key"`
+	Device_Id int    `json:"device_id"`
+	Key       string `json:"key"`
 }
 
 var counter int = 10000
