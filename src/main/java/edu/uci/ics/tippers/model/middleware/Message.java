@@ -5,9 +5,15 @@ import edu.uci.ics.tippers.dbms.MallData;
 public class Message{
     private String msg;
     private MallData[] md;
-    public Message(String msg, MallData[] md) {
+    private MetaData[] metaData;
+    private String uid;
+    private String qid;
+    public Message(String msg, MallData[] md, MetaData[] metaData, String qid, String uid) {
         this.msg = msg;
-        this.md = md; 
+        this.md = md;
+        this.metaData = metaData; 
+        this.qid = qid;
+        this.uid = uid;
     }
     
     public void setMessage(String msg) {
@@ -24,6 +30,18 @@ public class Message{
 
     public MallData[] getMD() {
         return this.md;
+    }
+
+    public MetaData[] getMetaData() {
+        return this.metaData;
+    }
+
+    public String getUID() {
+        return this.uid;
+    }
+
+    public String getQid() {
+        return this.qid;
     }
 
     @Override

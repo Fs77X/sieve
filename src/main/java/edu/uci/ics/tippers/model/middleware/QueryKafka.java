@@ -1,5 +1,7 @@
 package edu.uci.ics.tippers.model.middleware;
 
+import edu.uci.ics.tippers.dbms.MallData;
+
 // import org.apache.tomcat.jni.Time;
 
 public class QueryKafka {
@@ -8,17 +10,21 @@ public class QueryKafka {
     private String info;
     private String query;
     private String updateKey;
-    private String updateProp;
-    private String updateInfo;
+    private MallData mallData;
+    private MetaData metaData;
+    private String qid;
     public QueryKafka() {
 
     }
-    public QueryKafka(String id, String prop, String info, String query, String updateKey, String updateProp, String updateInfo) {
+    public QueryKafka(String id, String prop, String info, String query, String updateKey, MallData mallData, MetaData metaData, String qid) {
         this.id = id;
         this.prop = prop;
         this.info = info;
         this.query = query;
         this.updateKey = updateKey;
+        this.mallData = mallData;
+        this.metaData = metaData;
+        this.qid = qid;
     }
     public String getId() {
         return this.id;
@@ -38,6 +44,17 @@ public class QueryKafka {
 
     public String getUpdateKey() {
         return this.updateKey;
+    }
+    public MallData getMallData() {
+        return this.mallData;
+    }
+
+    public MetaData getMetaData() {
+        return this.metaData;
+    }
+
+    public String getQid(){
+        return this.qid;
     }
 
     @Override public String toString() {

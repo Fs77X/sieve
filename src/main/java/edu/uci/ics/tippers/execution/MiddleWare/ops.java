@@ -8,10 +8,13 @@ import edu.uci.ics.tippers.dbms.QueryResult;
 import edu.uci.ics.tippers.persistor.PolicyPersistor;
 import edu.uci.ics.tippers.model.guard.GuardExp;
 import edu.uci.ics.tippers.model.guard.SelectGuard;
+import edu.uci.ics.tippers.model.middleware.MetaData;
 import edu.uci.ics.tippers.model.policy.BEExpression;
 import edu.uci.ics.tippers.model.policy.BEPolicy;
-import java.time.*;
+// import java.time.*;
 import java.util.*;
+import java.sql.Time;
+import java.sql.Date;
 import edu.uci.ics.tippers.fileop.Writer;
 
 public class ops {
@@ -66,6 +69,43 @@ public class ops {
         String query = "SELECT UNIQUE policy_id from user_policy_object_condition WHERE attribute = device_id AND comp_value = " + device_id;
         return queryManager.getPolId(query);
     }
+
+    private int insertEntry(MallData mallData) {
+        int device_id = mallData.getDeviceID();
+        String key = mallData.getId();
+        String shop_name = mallData.getShopName();
+        Date obs_date = mallData.getObsDate();
+        Time obs_time = mallData.getObsTime();
+        String user_interest = mallData.getUserInterest();
+        
+        
+        StringBuilder sb = new StringBuilder("INSERT INTO mall_observation(id, shop_name, obs_date, obs_time, user_interest, device_id) VALUES(");
+        sb.append("\'").append(key).append("\', ");
+        sb.append("\'").append(shop_name).append("\', ");
+        sb.append("\'").append(obs_date).append("\', ");
+        sb.append("\'").append(obs_time).append("\', ");
+        sb.append("\'").append(user_interest).append("\', ");
+        sb.append("\'").append(device_id).append("\');");
+        return queryManager.runMidDelMod(sb.toString());
+    }
+
+    private int insertPolicyEntry(MetaData metaData) {
+        StringBuilder sb = new StringBuilder("");
+        return 0;
+
+    }
+
+    public int insertData(MallData mallData, MetaData metaData){
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String policy_id = metaData.getID();
+        String key = mallData.getId();
+        int status = insertEntry(mallData);
+        status = insertPolicyEntry(metaData);
+        return status;
+        
+    }
+
     public int deletePersonalData(String device_id) {
         PolicyConstants.initialize();
         String[] polId = getPolicyIdFromUsr(device_id);

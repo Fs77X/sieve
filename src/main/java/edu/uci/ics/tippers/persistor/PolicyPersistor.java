@@ -150,13 +150,13 @@ public class PolicyPersistor {
                         "FROM " + policy_table + ", " + oc_table +
                         " WHERE " + policy_table + ".querier=? AND " + policy_table + ".id = " + oc_table
                         + ".policy_id " +
-                        "AND " + policy_table + ".enforcement_action=? AND " + policy_table + "." + prop + "=? AND " +
-                        policy_table + ".ttl>? " +
+                        "AND " + policy_table + ".enforcement_action=? AND " + policy_table + "." + prop + "=? " + // AND at end
+                        //policy_table + ".ttl>? " +
                         " order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value");
                 queryStm.setString(1, querier);
                 queryStm.setString(2, enforcement_action);
                 queryStm.setString(3, info);
-                queryStm.setInt(4, dateEpoch);
+                // queryStm.setInt(4, dateEpoch);
             } else {
                 queryStm = connection.prepareStatement("SELECT " + policy_table + ".id, " + policy_table + ".querier, "
                         + policy_table + ".purpose, " +
