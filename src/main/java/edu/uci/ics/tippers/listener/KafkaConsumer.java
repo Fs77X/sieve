@@ -72,17 +72,27 @@ public class KafkaConsumer {
         
     }
 
-    private void mget_entry(String querier, String prop, String info) {
+    private void mget_entry(String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
         MallData[] res = op.getpersonalEntry(info);
-        ProduceResults pr = new ProduceResults();
+        Message msg;
         if (res == null) {
-            Message msg = new Message("Fail, data not found", null, null, "", "");
-            pr.sendResults(msg);
+            msg = new Message("Fail, data not found", null, null, qid, querier);
+        } else {
+            msg = new Message("Succ", res, null, qid, querier);
         }
-        Message msg = new Message("Succ", res, null, "", "");
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
 
-        pr.sendResults(msg);
     }
 
     private void mget_metaEntry(String querier, String prop, String info) {
@@ -162,7 +172,7 @@ public class KafkaConsumer {
                 mget_obj(querier, prop, info, qid, qm);
                 break;
             case "mget_entry":
-                mget_entry(querier, prop, info);
+                mget_entry(querier, prop, info, qid, qm);
                 break;
             case "mget_objUSR":
                 mget_objUSR(querier, prop, info);
