@@ -57,21 +57,18 @@ public class QueryExecutor {
         }
     }
     public MallData[] getQuery(String query) {
-        LinkedList<MallData> mallData = new LinkedList<MallData>();
         Statement statement = null;
         try{
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = statement.executeQuery(query);
+            rs.last();
+            MallData[] res = new MallData[rs.getRow()];
+            rs.beforeFirst();
+            int counter = 0;
             while(rs.next()) {
                 MallData newMD = new MallData(rs.getString("id"), rs.getString("shop_name"), rs.getDate("obs_date"), rs.getTime("obs_time"), rs.getString("user_interest"), rs.getInt("device_id"));
-                mallData.add(newMD);
-            }
-            Iterator<MallData> i = mallData.iterator();
-            MallData[] res = new MallData[mallData.size()];
-            Integer resCount = 0;
-            while (i.hasNext()) {
-                res[resCount] = i.next();
-                resCount++;
+                res[counter] = newMD;
+                counter = counter + 1;
             }
             return res;
         } catch (SQLException ex) {
