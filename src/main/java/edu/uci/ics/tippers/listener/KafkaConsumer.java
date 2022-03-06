@@ -99,10 +99,9 @@ public class KafkaConsumer {
         ops op = new ops();
     }
 
-    private void mdelete_obj(String key) {
+    private void mdelete_obj(String key, String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
         int status = op.removeUserEntry(key);
-        ProduceResults pr = new ProduceResults();
         Message msg;
         if (status != 0) {
             msg = new Message("Fail to update", null, null, "", ""); 
@@ -110,14 +109,23 @@ public class KafkaConsumer {
         else {
             msg = new Message("Succ", null, null, "", ""); 
         }
-        pr.sendResults(msg);
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
 
     }
 
-    private void mmodify_obj(String updateKey, String prop, String info) {
+    private void mmodify_obj(String updateKey, String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
         int status = op.updateEntry(updateKey, prop, info);
-        ProduceResults pr = new ProduceResults();
         Message msg;
         if (status != 0) {
             msg = new Message("Fail to update", null, null, "", ""); 
@@ -125,14 +133,22 @@ public class KafkaConsumer {
         else {
             msg = new Message("Succ", null, null, "", ""); 
         }
-        pr.sendResults(msg);
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
-    private void mmodify_metaobj(String updateKey, String prop, String info) {
+    private void mmodify_metaobj(String updateKey, String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
         int status = op.updateMetaEntry(updateKey, prop, info);
-        System.out.println(status);
-        ProduceResults pr = new ProduceResults();
         Message msg;
         if (status != 0) {
             msg = new Message("Fail to update", null, null, "", ""); 
@@ -140,7 +156,17 @@ public class KafkaConsumer {
         else {
             msg = new Message("Succ", null, null, "", ""); 
         }
-        pr.sendResults(msg);
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     @Autowired
@@ -166,7 +192,7 @@ public class KafkaConsumer {
         MetaData metaData = qm.getMetaData();
         MallData mallData = qm.getMallData();
         String qid = qm.getQid();
-        System.out.println("querier: " + querier + " prop: " + prop + " info: " + info + " query: " + query);
+        // System.out.println("querier: " + querier + " prop: " + prop + " info: " + info + " query: " + query);
         switch (query) {
             case "mget_obj":
                 mget_obj(querier, prop, info, qid, qm);
@@ -178,15 +204,15 @@ public class KafkaConsumer {
                 mget_objUSR(querier, prop, info);
                 break;
             case "mmodify_obj":
-                mmodify_obj(updateKey, prop, info);
+                mmodify_obj(updateKey, querier, prop, info, qid, qm);
                 break;
             case "mmodify_metaobj":
-                mmodify_metaobj(updateKey, prop, info);
+                mmodify_metaobj(updateKey, querier, prop, info, qid, qm);
                 break;
             case "mget_metaEntry":
                 break;
             case "mdelete_obj":
-                mdelete_obj(updateKey);
+                mdelete_obj(updateKey, querier, prop, info, qid, qm);
                 break;
             case "madd_obj":
                 madd_obj(mallData, metaData);

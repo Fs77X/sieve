@@ -22,6 +22,12 @@ public class QueryExecutor {
         this.timeout = timeout + PolicyConstants.MAX_DURATION.toMillis();
     }
 
+    /**
+     * 
+     * @param query String of query
+     * @return 0 or throws SQLException
+     * Performs insert, delete, modify queries
+     */
     public Integer runDelModQuery(String query) {
         Statement statement = null;
         try{

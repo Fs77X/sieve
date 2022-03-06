@@ -103,6 +103,13 @@ public class QueryManager {
         }
     }
 
+    /**
+     * 
+     * @param queryString string of query
+     * @return 0 or throws
+     * @throws PolicyEngineException
+     * runs insert, modify, deletion query
+     */
     public Integer runMidDelMod(String queryString) throws PolicyEngineException {
         try {
             return queryExecutor.runDelModQuery(queryString);

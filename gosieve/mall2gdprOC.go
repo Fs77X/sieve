@@ -107,7 +107,7 @@ func generateOC(id int, uuid string, attribute string, operator string, data md,
 }
 
 func insertPolicy(listOfIds []listIds, db *sql.DB) {
-	for _, lID := range listOfIds {
+	for i, lID := range listOfIds {
 		gpdrMeta := generateMData()
 		querier := rand.Intn(39) + 1
 		inserted_at := time.Now()
@@ -117,6 +117,7 @@ func insertPolicy(listOfIds []listIds, db *sql.DB) {
 			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`, counter, lID.Policy_Id, querier, gpdrMeta.Purpose, gpdrMeta.TTL, gpdrMeta.Origin, gpdrMeta.Objection, gpdrMeta.Sharing, ENFORCEMENT_ACTION, inserted_at, lID.Device_Id, lID.Key)
 		checkErr(err)
 		counter = counter + 1
+		fmt.Println(strconv.Itoa(i) + " out of " + strconv.Itoa(len(listOfIds)) + " in UP")
 	}
 }
 
@@ -185,7 +186,7 @@ func delOldmData(db *sql.DB) {
 
 func generateAllAtributes(data []md, db *sql.DB) []listIds {
 	var listOfIds []listIds
-	for _, mallData := range data {
+	for i, mallData := range data {
 		u1 := uuid.NewV4().String()
 		var newList listIds
 		newList.Policy_Id = u1
@@ -212,6 +213,7 @@ func generateAllAtributes(data []md, db *sql.DB) []listIds {
 				}
 			}
 		}
+		fmt.Println(strconv.Itoa(i) + " out of " + strconv.Itoa(len(data)) + " in OC")
 	}
 	return listOfIds
 }
