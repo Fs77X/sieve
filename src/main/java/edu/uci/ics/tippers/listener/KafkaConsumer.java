@@ -104,10 +104,10 @@ public class KafkaConsumer {
         int status = op.removeUserEntry(key);
         Message msg;
         if (status != 0) {
-            msg = new Message("Fail to update", null, null, "", ""); 
+            msg = new Message("Fail to update", null, null, qid, querier); 
         }
         else {
-            msg = new Message("Succ", null, null, "", ""); 
+            msg = new Message("Succ", null, null, qid, querier); 
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
@@ -126,12 +126,13 @@ public class KafkaConsumer {
     private void mmodify_obj(String updateKey, String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
         int status = op.updateEntry(updateKey, prop, info);
+        System.out.println("MMODIFYOBJ" + status);
         Message msg;
         if (status != 0) {
-            msg = new Message("Fail to update", null, null, "", ""); 
+            msg = new Message("Fail to update", null, null, qid, querier); 
         }
         else {
-            msg = new Message("Succ", null, null, "", ""); 
+            msg = new Message("Succ", null, null, qid, querier); 
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
@@ -151,10 +152,10 @@ public class KafkaConsumer {
         int status = op.updateMetaEntry(updateKey, prop, info);
         Message msg;
         if (status != 0) {
-            msg = new Message("Fail to update", null, null, "", ""); 
+            msg = new Message("Fail to update", null, null, qid, querier); 
         }
         else {
-            msg = new Message("Succ", null, null, "", ""); 
+            msg = new Message("Succ", null, null, qid, querier); 
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
@@ -192,7 +193,7 @@ public class KafkaConsumer {
         MetaData metaData = qm.getMetaData();
         MallData mallData = qm.getMallData();
         String qid = qm.getQid();
-        // System.out.println("querier: " + querier + " prop: " + prop + " info: " + info + " query: " + query);
+        System.out.println("querier: " + querier + " prop: " + prop + " info: " + info + " query: " + query + " querier: " + querier + " updatekey: " + updateKey);
         switch (query) {
             case "mget_obj":
                 mget_obj(querier, prop, info, qid, qm);

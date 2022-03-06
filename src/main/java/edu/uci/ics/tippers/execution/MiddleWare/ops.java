@@ -184,7 +184,7 @@ public class ops {
     public int updateMetaEntry(String updateKey, String prop, String info) {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
-        String query = "UPDATE user_policy SET " + prop + "= \'" + info + "\' WHERE policy_id = \'" + updateKey + "\';";
+        String query = "UPDATE user_policy SET " + prop + "= \'" + info + "\' WHERE key = \'" + updateKey + "\';";
         System.out.println(query);
         return queryManager.runMidDelMod(query);
     }
