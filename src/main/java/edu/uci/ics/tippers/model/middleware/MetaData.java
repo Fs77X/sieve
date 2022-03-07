@@ -19,10 +19,7 @@ CREATE TABLE public.user_policy (
 
 
 */
-import java.sql.Time;
-import java.sql.Timestamp;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 public class MetaData {
     private int policy_id;
     private String id;
