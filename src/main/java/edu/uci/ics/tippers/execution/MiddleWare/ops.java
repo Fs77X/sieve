@@ -304,6 +304,15 @@ public class ops {
         return queryManager.runMidDelMod(query);
     }
 
+    public int updateMeta(String changeVal, String prop, String info, String querier) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "";
+        query = "UPDATE user_policy SET " + prop + "= \'" + changeVal + "\' WHERE " + prop + "= \'" + info + "\' AND querier = \'" + querier + "\'";
+        System.out.println(query);
+        return queryManager.runMidDelMod(query);
+    }
+
     public int updateMetaEntry(String updateKey, String prop, String info) {
         PolicyConstants.initialize();
         queryManager = new QueryManager();

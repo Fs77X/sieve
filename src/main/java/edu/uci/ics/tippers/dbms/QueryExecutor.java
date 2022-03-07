@@ -75,7 +75,7 @@ public class QueryExecutor {
             rs.beforeFirst();
             int counter = 0;
             while(rs.next()) {
-                MetaData newMD = new MetaData(rs.getInt("policy_id"), rs.getString("id"), rs.getString("querier"), rs.getString("purpose"), rs.getInt("ttl"), rs.getString("origin"), rs.getString("objection"), rs.getString("sharing"), rs.getString("enforcement_action"), rs.getTime("inserted_at"), rs.getInt("device_id"), rs.getString("key"));
+                MetaData newMD = new MetaData(rs.getInt("policy_id"), rs.getString("id"), rs.getString("querier"), rs.getString("purpose"), rs.getInt("ttl"), rs.getString("origin"), rs.getString("objection"), rs.getString("sharing"), rs.getString("enforcement_action"), rs.getString("inserted_at"), rs.getInt("device_id"), rs.getString("key"));
                 res[counter] = newMD;
                 counter = counter + 1;
             }

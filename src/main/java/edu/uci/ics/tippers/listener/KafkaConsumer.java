@@ -221,6 +221,29 @@ public class KafkaConsumer {
         catch (IOException e) { e.printStackTrace(); }
     }
 
+    private void mmodify_metaController(String changeVal, String querier, String prop, String info, String qid, QueryKafka qk) {
+        ops op = new ops();
+        int status = op.updateMeta(changeVal, prop, info, querier);
+        Message msg;
+        if (status != 0) {
+            msg = new Message("Fail to update", null, null, qid, querier); 
+        }
+        else {
+            msg = new Message("Succ", null, null, qid, querier); 
+        }
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
+    }
+
     @Autowired
     KafkaTemplate<String, Message> kafkaTemplate;
 
@@ -241,6 +264,7 @@ public class KafkaConsumer {
         String info = qm.getInfo();
         String query = qm.getQuery();
         String updateKey = qm.getUpdateKey();
+        String changeVal = qm.getChangeVal();
         MetaData metaData = qm.getMetaData();
         MallData mallData = qm.getMallData();
         String qid = qm.getQid();
@@ -269,6 +293,9 @@ public class KafkaConsumer {
                 break;
             case "madd_obj":
                 madd_obj(querier, mallData, metaData, qid, qm);
+                break;
+            case "mmodify_metaController":
+                mmodify_metaController(changeVal, querier, prop, info, qid, qm);
                 break;
             default:
                 System.out.println("uhoh");

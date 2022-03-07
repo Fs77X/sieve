@@ -10,18 +10,20 @@ public class QueryKafka {
     private String info;
     private String query;
     private String updateKey;
+    private String changeVal;
     private MallData mallData;
     private MetaData metaData;
     private String qid;
     public QueryKafka() {
 
     }
-    public QueryKafka(String id, String prop, String info, String query, String updateKey, MallData mallData, MetaData metaData, String qid) {
+    public QueryKafka(String id, String prop, String info, String query, String updateKey, String changeVal, MallData mallData, MetaData metaData, String qid) {
         this.id = id;
         this.prop = prop;
         this.info = info;
         this.query = query;
         this.updateKey = updateKey;
+        this.changeVal = changeVal;
         this.mallData = mallData;
         this.metaData = metaData;
         this.qid = qid;
@@ -55,6 +57,10 @@ public class QueryKafka {
 
     public String getQid(){
         return this.qid;
+    }
+
+    public String getChangeVal() {
+        return this.changeVal;
     }
 
     @Override public String toString() {
