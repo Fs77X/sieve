@@ -9,6 +9,10 @@ public class MallData {
     private Time obs_time;
     private String user_interest;
     private Integer device_id;
+
+    public MallData() {
+
+    }
     public MallData(String id, String shop_name, Date obs_date, Time obs_time, String user_interest, Integer device_id) {
         this.id = id;
         this.shop_name = shop_name;

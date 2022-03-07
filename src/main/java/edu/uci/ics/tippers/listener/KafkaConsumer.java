@@ -34,9 +34,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class KafkaConsumer {
     private static final String topic = "results";
-
-    private void madd_obj(MallData mallData, MetaData metaData) {
+    private int counter = 690069;
+    private void madd_obj(String querier, MallData mallData, MetaData metaData, String qid, QueryKafka qk) {
         ops op = new ops();
+        int newcounter = op.insertData(mallData, metaData, counter);
+        Message msg;
+        if (newcounter > counter) {
+            msg = new Message("Succ", null, null, qid, querier);
+        } else {
+            msg = new Message("Fail, data not inserted", null, null, qid, querier);
+        }
+        this.counter = newcounter;
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mget_objUSR(String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -249,7 +268,7 @@ public class KafkaConsumer {
                 mdelete_obj(updateKey, querier, prop, info, qid, qm);
                 break;
             case "madd_obj":
-                madd_obj(mallData, metaData);
+                madd_obj(querier, mallData, metaData, qid, qm);
                 break;
             default:
                 System.out.println("uhoh");

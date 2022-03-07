@@ -14,7 +14,11 @@ import edu.uci.ics.tippers.model.policy.BEPolicy;
 // import java.time.*;
 import java.util.*;
 import java.sql.Time;
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+// import java.sql.Date;
+import java.util.Date;
 import edu.uci.ics.tippers.fileop.Writer;
 
 public class ops {
@@ -90,18 +94,129 @@ public class ops {
     }
 
     private int insertPolicyEntry(MetaData metaData) {
-        StringBuilder sb = new StringBuilder("");
-        return 0;
+        String dateString = metaData.getInsertedAt();
+        Timestamp timestamp = null;
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(dateString);
+            String formattedDate = new SimpleDateFormat("yyyyMMdd").format(date);
+            timestamp = new Timestamp(new SimpleDateFormat("yyyyMMdd").parse(formattedDate).getTime());
+            System.out.println("TIMESTAMP: " + timestamp);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        StringBuilder sb = new StringBuilder("INSERT INTO user_policy(policy_id, id, querier, purpose, ttl, origin, objection, sharing, enforcement_action, inserted_at, device_id, key) VALUES(");
+        sb.append("").append(metaData.getPolicyID()).append(", ");
+        sb.append("\'").append(metaData.getID()).append("\', ");
+        sb.append("\'").append(metaData.getQuerier()).append("\', ");
+        sb.append("\'").append(metaData.getPurpose()).append("\', ");
+        sb.append("").append(metaData.getTtl()).append(", ");
+        sb.append("\'").append(metaData.getOrigin()).append("\', ");
+        sb.append("\'").append(metaData.getObjection()).append("\', ");
+        sb.append("\'").append(metaData.getSharing()).append("\', ");
+        sb.append("\'").append(metaData.getEnforcementAction()).append("\', ");
+        sb.append("\'").append(timestamp).append("\', ");
+        sb.append("").append(metaData.getDeviceID()).append(", ");
+        sb.append("\'").append(metaData.getKey()).append("\');");
+        System.out.println(sb.toString());
+        return queryManager.runMidDelMod(sb.toString());
 
     }
 
-    public int insertData(MallData mallData, MetaData metaData){
+    public String buildOCInsert(MallData mallData, String polID, String col, String operator, int counter) {
+        StringBuilder sb = new StringBuilder("INSERT INTO user_policy_object_condition(id, policy_id, attribute, attribute_type, operator, comp_value) VALUES(");
+        sb.append(counter).append(", ");
+        sb.append("\'").append(polID).append("\', ");
+        sb.append("\'").append(col).append("\', ");
+        switch (col) {
+            case "obs_date":
+            sb.append("\'").append("DATE").append("\', ");
+                break;
+            case "obs_time":
+            sb.append("\'").append("TIME").append("\', ");
+                break;
+            default:
+                sb.append("\'").append("STRING").append("\', ");
+        }
+        sb.append("\'").append(operator).append("\', ");
+        switch (col) {
+            case "device_id":
+                sb.append("\'").append(mallData.getDeviceID()).append("\')");
+                break;
+            case "shop_name":
+                sb.append("\'").append(mallData.getShopName()).append("\')");
+                break;
+            case "obs_time":
+                sb.append("\'").append(mallData.getObsTime()).append("\')");
+                break;
+            case "obs_date":
+                sb.append("\'").append(mallData.getObsDate()).append("\')");
+                break;
+            case "user_interest":
+                sb.append("\'").append(mallData.getUserInterest()).append("\')");
+                break;
+            default:
+                System.err.println("RUH ROH");
+        }
+        return sb.toString();
+    }
+
+    public int InsertOC(MallData mallData, String polID, int counter) {
+        final String[] mdCols = {"device_id", "shop_name", "obs_date", "obs_time", "user_interest"};
+        int status = 0;
+        for(int i = 0; i < mdCols.length; i++) {
+            System.out.println(mdCols[i].equals("user_interest"));
+            System.out.println(mdCols[i]);
+            if(mdCols[i].equals("user_interest") && !mallData.getUserInterest().isEmpty()) {
+                System.out.println("FELL HERE CUZ JAVA SUX");
+                String query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
+                System.out.println(query);
+                counter = counter + 1;
+                status = queryManager.runMidDelMod(query);
+                query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
+                System.out.println(query);
+                counter = counter + 1;
+                status = queryManager.runMidDelMod(query);
+            } else {
+                if(mdCols[i].equals("obs_date") || mdCols[i].equals("obs_time")) {
+                    String query = buildOCInsert(mallData, polID, mdCols[i], "<=", counter);
+                    System.out.println(query);
+                    counter = counter + 1;
+                    status = queryManager.runMidDelMod(query);
+                    query = buildOCInsert(mallData, polID, mdCols[i], ">=", counter);
+                    System.out.println(query);
+                    counter = counter + 1;
+                    status = queryManager.runMidDelMod(query);
+                } else if(!mdCols[i].equals("user_interest")) {
+                    if (mdCols[i].equals("user_interest")) {
+                        System.out.println("FELL HERE CUZ JAVA SUX2");
+                    }
+                    String query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
+                    System.out.println(query);
+                    counter = counter + 1;
+                    status = queryManager.runMidDelMod(query);
+                    query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
+                    System.out.println(query);
+                    counter = counter + 1;
+                    status = queryManager.runMidDelMod(query);
+                }
+            }
+        }
+        if (status == 0) {
+            return counter;
+        } else {
+            return -1;
+        }
+    }
+
+    public int insertData(MallData mallData, MetaData metaData, int counter){
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String policy_id = metaData.getID();
         String key = mallData.getId();
         int status = insertEntry(mallData);
         status = insertPolicyEntry(metaData);
+        status = InsertOC(mallData, policy_id, counter);
         return status;
         
     }

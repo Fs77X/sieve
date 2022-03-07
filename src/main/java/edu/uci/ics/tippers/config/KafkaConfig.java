@@ -57,8 +57,8 @@ public class KafkaConfig {
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "group_json");
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        return new DefaultKafkaConsumerFactory<String, QueryKafka>(configs, new StringDeserializer(), new JsonDeserializer<>(QueryKafka.class));
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, QueryKafkaDeserializer.class);
+        return new DefaultKafkaConsumerFactory<String, QueryKafka>(configs, new StringDeserializer(), new QueryKafkaDeserializer());
     }
     @Bean
     public ConsumerFactory<String, LeTime> leTimeConsumerFactory() {

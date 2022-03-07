@@ -20,6 +20,9 @@ CREATE TABLE public.user_policy (
 
 */
 import java.sql.Time;
+import java.sql.Timestamp;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 public class MetaData {
     private int policy_id;
     private String id;
@@ -30,11 +33,15 @@ public class MetaData {
     private String objection;
     private String sharing;
     private String enforcement_action;
-    private Time inserted_at;
+    private String inserted_at;
     private int device_id;
     private String key;
 
-    public MetaData(int policy_id, String id, String querier, String purpose, int ttl, String origin, String objection, String sharing, String enforcement_action, Time inserted_at, int device_id, String key) {
+    public MetaData() {
+
+    }
+
+    public MetaData(int policy_id, String id, String querier, String purpose, int ttl, String origin, String objection, String sharing, String enforcement_action, String inserted_at, int device_id, String key) {
         this.policy_id = policy_id;
         this.id = id;
         this.querier = querier;
@@ -66,7 +73,7 @@ public class MetaData {
         return this.purpose;
     }
 
-    public int ttl() {
+    public int getTtl() {
         return this.ttl;
     }
 
@@ -86,7 +93,7 @@ public class MetaData {
         return this.enforcement_action;
     }
 
-    public Time getInsertedAt() {
+    public String getInsertedAt() {
         return this.inserted_at;
     }
 
