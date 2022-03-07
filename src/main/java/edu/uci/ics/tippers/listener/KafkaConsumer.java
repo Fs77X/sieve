@@ -27,6 +27,10 @@ import edu.uci.ics.tippers.execution.MiddleWare.ops;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+/**]
+ * to do: rename variable updateKey to key
+ * rename function runmiddelquery to runupdate
+ */
 @Service
 public class KafkaConsumer {
     private static final String topic = "results";
@@ -35,17 +39,26 @@ public class KafkaConsumer {
         ops op = new ops();
     }
 
-    private void mget_objUSR(String querier, String prop, String info) {
+    private void mget_objUSR(String querier, String prop, String info, String qid, QueryKafka qk) {
         ops op = new ops();
-        MallData[] res = op.getpersonalData(info);
+        MallData[] res = op.getpersonalData(querier);
         Message msg;
         if (res == null) {
-            msg = new Message("Fail, data not found", res, null, "", "");
+            msg = new Message("Fail, data not found", res, null, qid, querier);
         } else {
-            msg = new Message("Succ", res, null, "", "");
+            msg = new Message("Succ", res, null, qid, querier);
         }
-        ProduceResults pr = new ProduceResults();
-        pr.sendResults(msg);
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mget_obj(String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -95,8 +108,27 @@ public class KafkaConsumer {
 
     }
 
-    private void mget_metaEntry(String querier, String prop, String info) {
+    private void mget_metaEntry(String querier, String key, String prop, String info,  String qid, QueryKafka qk) {
+        System.out.println("IM HEREEEE");
         ops op = new ops();
+        MetaData[] res = op.getMetaDataKey(querier, key);
+        Message msg;
+        if (res == null) {
+            msg = new Message("Fail, data not found", null, null, qid, querier);
+        } else {
+            msg = new Message("Succ", null, res, qid, querier);
+        }
+        CloudResponse cr = new CloudResponse();
+        cr.sendResponse(msg);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String operation = mapper.writeValueAsString(qk);
+            LogMessage lm = new LogMessage(querier, operation);
+            LogResults lr = new LogResults();
+            lr.sendResults(lm);
+        } catch (JsonParseException e) { e.printStackTrace();}
+        catch (JsonMappingException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mdelete_obj(String key, String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -202,7 +234,7 @@ public class KafkaConsumer {
                 mget_entry(querier, prop, info, qid, qm);
                 break;
             case "mget_objUSR":
-                mget_objUSR(querier, prop, info);
+                mget_objUSR(querier, prop, info, qid, qm);
                 break;
             case "mmodify_obj":
                 mmodify_obj(updateKey, querier, prop, info, qid, qm);
@@ -211,6 +243,7 @@ public class KafkaConsumer {
                 mmodify_metaobj(updateKey, querier, prop, info, qid, qm);
                 break;
             case "mget_metaEntry":
+                mget_metaEntry(querier, updateKey, prop, info, qid, qm);
                 break;
             case "mdelete_obj":
                 mdelete_obj(updateKey, querier, prop, info, qid, qm);

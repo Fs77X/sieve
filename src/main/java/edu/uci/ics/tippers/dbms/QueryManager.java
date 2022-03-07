@@ -2,6 +2,7 @@ package edu.uci.ics.tippers.dbms;
 
 import edu.uci.ics.tippers.common.PolicyConstants;
 import edu.uci.ics.tippers.common.PolicyEngineException;
+import edu.uci.ics.tippers.model.middleware.MetaData;
 
 import java.sql.*;
 import java.time.Duration;
@@ -120,6 +121,14 @@ public class QueryManager {
     public String[] getPolId(String queryString) throws PolicyEngineException{
         try {
             return queryExecutor.getPolicyId(queryString);
+        } catch (Exception e) {
+            throw new PolicyEngineException("Error Running Query");
+        }
+    }
+
+    public MetaData[] getMData(String query) {
+        try {
+            return queryExecutor.getMetaEntry(query);
         } catch (Exception e) {
             throw new PolicyEngineException("Error Running Query");
         }

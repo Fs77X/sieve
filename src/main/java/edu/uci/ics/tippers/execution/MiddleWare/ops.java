@@ -114,6 +114,14 @@ public class ops {
         status = removeUserData(device_id);
         return status;
     }
+    public MetaData[] getMetaDataKey(String device_id, String key) {
+        PolicyConstants.initialize();
+        queryManager = new QueryManager();
+        String query = "SELECT * from user_policy where device_id = \'" + device_id + "\' AND key = \'" + key + "\'";
+        return queryManager.getMData(query);
+
+
+    }
     public MallData[] getpersonalData(String device_id) {
         PolicyConstants.initialize();
         queryManager = new QueryManager();

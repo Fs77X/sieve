@@ -2,6 +2,8 @@ package edu.uci.ics.tippers.dbms;
 
 import edu.uci.ics.tippers.common.PolicyConstants;
 import edu.uci.ics.tippers.common.PolicyEngineException;
+import edu.uci.ics.tippers.model.middleware.MetaData;
+
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
@@ -62,6 +64,29 @@ public class QueryExecutor {
             throw new PolicyEngineException("Failed to query the database. " + ex);
         }
     }
+
+    public MetaData[] getMetaEntry(String query) {
+        Statement statement = null;
+        try{
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = statement.executeQuery(query);
+            rs.last();
+            MetaData[] res = new MetaData[rs.getRow()];
+            rs.beforeFirst();
+            int counter = 0;
+            while(rs.next()) {
+                MetaData newMD = new MetaData(rs.getInt("policy_id"), rs.getString("id"), rs.getString("querier"), rs.getString("purpose"), rs.getInt("ttl"), rs.getString("origin"), rs.getString("objection"), rs.getString("sharing"), rs.getString("enforcement_action"), rs.getTime("inserted_at"), rs.getInt("device_id"), rs.getString("key"));
+                res[counter] = newMD;
+                counter = counter + 1;
+            }
+            return res;
+        } catch (SQLException ex) {
+            cancelStatement(statement, ex);
+            ex.printStackTrace();
+            throw new PolicyEngineException("Failed to query the database. " + ex);
+        }
+    }
+
     public MallData[] getQuery(String query) {
         Statement statement = null;
         try{
