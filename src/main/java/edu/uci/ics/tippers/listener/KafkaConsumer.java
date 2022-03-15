@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class KafkaConsumer {
     private static final String topic = "results";
-    private int counter = 690100;
+    private int counter = 1939920;
     private void madd_obj(String querier, MallData mallData, MetaData metaData, String qid, QueryKafka qk) {
         ops op = new ops();
         int newcounter = op.insertData(mallData, metaData, counter);
@@ -179,7 +179,7 @@ public class KafkaConsumer {
         int status = op.updateEntry(updateKey, prop, info);
         System.out.println("MMODIFYOBJ" + status);
         Message msg;
-        if (status != 0) {
+        if (status != 200) {
             msg = new Message("Fail to update", null, null, qid, querier); 
         }
         else {

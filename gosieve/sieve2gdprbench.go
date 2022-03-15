@@ -182,7 +182,7 @@ func main() {
 	baseDB := setupDB()
 	mallData := yoinkData(sieveDB)
 	fmt.Println("yoinked md")
-	generatePairs(sieveDB, mallData, baseDB, 10000)
+	generatePairs(sieveDB, mallData, baseDB, 50000)
 	// fmt.Println("yoinked meta")
 	// // generateBase(baseDB, dp)
 	fmt.Println("Finished pushing data")
