@@ -22,7 +22,7 @@ import (
 const (
 	DB_USER     = "postgres"
 	DB_PASSWORD = "admin"
-	DB_NAME     = "the_encdb"
+	DB_NAME     = "the_db"
 )
 
 // type struct ttlRet {
@@ -264,15 +264,16 @@ func gdprLSTTL() {
 
 // basically same step with tombstoning
 func main() {
-	tick := time.Tick(2 * time.Second)
+	tick := time.Tick(5 * time.Second)
 	db := setupDB()
 	for range tick {
 		fmt.Println("Tick")
-		// listIDTTL := getTTLID(db)
-		listIDTTL := getTTLIDEnc(db)
+		listIDTTL := getTTLID(db)
+		// listIDTTL := getTTLIDEnc(db)
 		// gdprLSTTL()
 		// delTombstone(db, listIDTTL)
-		delTTLenc(db, listIDTTL, true)
+		delTTL(db, listIDTTL, true)
+		// delTTLenc(db, listIDTTL, true)
 		// delSeppy(db, listIDTTL)
 		// time.Sleep(5 * time.Second)
 	}
