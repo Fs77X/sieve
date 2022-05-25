@@ -8,7 +8,7 @@ import (
 	"strconv"
 	// "io/ioutil"
 	"encoding/json"
-
+	"os"
 	_ "github.com/lib/pq"
 )
 
@@ -72,7 +72,29 @@ func MDColUTe(colname string, newMD *mde) interface{} {
 }
 
 func getTTLID(db *sql.DB) []md {
-	rows, err := db.Query("SELECT id, ttl from user_policy;")
+	rows, err := db.Query("SELECT id, ttl from usertable;")
+	checkErr(err)
+	var res []md
+	var columns []string
+	columns, err1 := rows.Columns()
+	checkErr(err1)
+	colNum := len(columns)
+	for rows.Next() {
+		var newMd md
+		cols := make([]interface{}, colNum)
+		for i := 0; i < colNum; i++ {
+			cols[i] = MDColUT(columns[i], &newMd)
+		}
+
+		err2 := rows.Scan(cols...)
+		checkErr(err2)
+		res = append(res, newMd)
+	}
+	return res
+}
+
+func getTTLIDTomb(db *sql.DB) []md {
+	rows, err := db.Query("SELECT id, ttl from usertable where tomb = 0;")
 	checkErr(err)
 	var res []md
 	var columns []string
@@ -115,13 +137,17 @@ func getTTLIDEnc(db *sql.DB) []mde {
 	return res
 }
 
-func delTTL(db *sql.DB, listIDTTL []md, vac bool) {
+func delTTL(db *sql.DB, listIDTTL []md, vac bool, vacfull bool) {
 	currTime := time.Now().Unix()
 	for _, mdObj := range listIDTTL {
 		if mdObj.TTL < currTime {
 			_, err := db.Exec("DELETE FROM usertable where id = $1", mdObj.Id)
 			checkErr(err)
 			if vac {
+				_, err1 := db.Exec("VACUUM usertable")
+				checkErr(err1)
+			}
+			if vacfull {
 				_, err1 := db.Exec("VACUUM FULL usertable")
 				checkErr(err1)
 			}
@@ -152,7 +178,7 @@ func delTombstone(db *sql.DB, listIDTTL []md) {
 	for _, mdObj := range listIDTTL {
 		// fmt.Println(mdObj.TTL)
 		if mdObj.TTL < currTime {
-			fmt.Println("UPDATE usertable set tomb = 1 where id = " + mdObj.Id)
+			// fmt.Println("UPDATE usertable set tomb = 1 where id = " + mdObj.Id)
 			_, err := db.Exec("UPDATE usertable set tomb = 1 where id = $1", mdObj.Id)
 			checkErr(err)
 		}
@@ -266,13 +292,29 @@ func gdprLSTTL() {
 func main() {
 	tick := time.Tick(5 * time.Second)
 	db := setupDB()
+	vac := false
+	vacfull := false
+	if os.Args[1] == "vac" {
+		vac = true
+	}
+	if os.Args[1] == "vacfull" {
+		vacfull = true
+	}
 	for range tick {
 		fmt.Println("Tick")
-		listIDTTL := getTTLID(db)
+		
+		if os.Args[1] == "tomb" {
+			listIDTTL := getTTLIDTomb(db)
+			delTombstone(db, listIDTTL)
+		} else {
+			listIDTTL := getTTLID(db)
+			delTTL(db, listIDTTL, vac, vacfull)
+		}
+		// listIDTTL := getTTLIDTomb(db)
 		// listIDTTL := getTTLIDEnc(db)
 		// gdprLSTTL()
 		// delTombstone(db, listIDTTL)
-		delTTL(db, listIDTTL, true)
+		// delTTL(db, listIDTTL, vac, vacfull)
 		// delTTLenc(db, listIDTTL, true)
 		// delSeppy(db, listIDTTL)
 		// time.Sleep(5 * time.Second)
