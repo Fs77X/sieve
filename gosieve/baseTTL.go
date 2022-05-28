@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"time"
 	"strconv"
-	// "io/ioutil"
 	"encoding/json"
 	"os"
 	_ "github.com/lib/pq"
+	// "io/ioutil"
+	"mime/multipart"
+	"bytes"
 )
 
 // import (
@@ -94,7 +96,7 @@ func getTTLID(db *sql.DB) []md {
 }
 
 func getTTLIDTomb(db *sql.DB) []md {
-	rows, err := db.Query("SELECT id, ttl from usertable where tomb = 0;")
+	rows, err := db.Query("SELECT id, ttl from user_policy where tomb = 0;")
 	checkErr(err)
 	var res []md
 	var columns []string
@@ -173,14 +175,41 @@ func delTTLenc(db *sql.DB, listIDTTL []mde, vac bool) {
 	fmt.Println("DELETE")
 }
 
+func sendLog(query string, result string) {
+	url := "http://localhost:8000/add_log/"
+	method := "POST"
+  
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	_ = writer.WriteField("querier", "ttldaemon")
+	_ = writer.WriteField("query", query)
+	_ = writer.WriteField("result", result)
+	err := writer.Close()
+	checkErr(err)
+	client := &http.Client {}
+	req, err1 := http.NewRequest(method, url, payload)
+	checkErr(err1)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+  	res, err2 := client.Do(req)
+	checkErr(err2)
+	defer res.Body.Close()
+	if res.StatusCode != http.StatusCreated {
+		fmt.Println(res.StatusCode)
+		fmt.Println("ISSUE")
+	}
+}
+
 func delTombstone(db *sql.DB, listIDTTL []md) {
 	currTime := time.Now().Unix()
 	for _, mdObj := range listIDTTL {
 		// fmt.Println(mdObj.TTL)
 		if mdObj.TTL < currTime {
 			// fmt.Println("UPDATE usertable set tomb = 1 where id = " + mdObj.Id)
-			_, err := db.Exec("UPDATE usertable set tomb = 1 where id = $1", mdObj.Id)
+			query := "UPDATE user_policy set tomb = 1 where id = $1"
+			_, err := db.Exec(query, mdObj.Id)
 			checkErr(err)
+			query ="UPDATE user_policy set tomb = 1 where id = " + mdObj.Id
+			sendLog(query, "del succ")
 		}
 	}
 	fmt.Println("DELETETOMB")
@@ -303,7 +332,7 @@ func main() {
 	for range tick {
 		fmt.Println("Tick")
 		
-		if os.Args[1] == "tomb" {
+		if os.Args[1] == "p3" {
 			listIDTTL := getTTLIDTomb(db)
 			delTombstone(db, listIDTTL)
 		} else {

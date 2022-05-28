@@ -23,14 +23,18 @@ type queryLog struct {
 	Result string `json:"result"`
 }
 
+
+// https://stackoverflow.com/questions/17629451/append-slice-to-csv-golang
 func addLog(w http.ResponseWriter, r *http.Request)  {
 	// read the file
 	//fname string, column []string
 	querier := r.FormValue("querier")
 	query := r.FormValue("query")
 	result := r.FormValue("result")
+	// fmt.Println(querier, query, result)
 	var response = JsonResponse{}
 	if querier == "" || query == "" || result == "" {
+		fmt.Println(querier, query, result)
 		status := 400
 		response := JsonResponse{Type: "Failure", Message: "Entries are missing!"}
 		w.WriteHeader(status)
@@ -51,7 +55,6 @@ func addLog(w http.ResponseWriter, r *http.Request)  {
 	writer.Write(column)
 	writer.Flush()
 	status := 201
-	fmt.Println("gucci")
 	response = JsonResponse{Type: "success", Message: "The entry has been inserted successfully!"}
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(response)
@@ -59,6 +62,6 @@ func addLog(w http.ResponseWriter, r *http.Request)  {
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/madd_log/", addLog).Methods("POST")
+	router.HandleFunc("/add_log/", addLog).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
