@@ -145,15 +145,22 @@ func delTTL(db *sql.DB, listIDTTL []md, vac bool, vacfull bool) {
 		if mdObj.TTL < currTime {
 			_, err := db.Exec("DELETE FROM usertable where id = $1", mdObj.Id)
 			checkErr(err)
+			query := "DELETE FROM usertable where id = " + mdObj.Id
+			sendLog(query, "del succ")
 			if vac {
 				_, err1 := db.Exec("VACUUM usertable")
 				checkErr(err1)
+				query = "VACUUM usertable"
+				sendLog(query, "del succ")
 			}
 			if vacfull {
 				_, err1 := db.Exec("VACUUM FULL usertable")
 				checkErr(err1)
+				query = "VACUUM FULL usertable"
+				sendLog(query, "del succ")
 			}
 		}
+		
 	}
 	fmt.Println("DELETE")
 }
@@ -331,8 +338,10 @@ func main() {
 	}
 	for range tick {
 		fmt.Println("Tick")
-		
-		if os.Args[1] == "p3" {
+		if os.Args[1] == "p1" {
+			listIDTTL := getTTLID(db)
+			delTTL(db, listIDTTL, true, false)
+		} else if os.Args[1] == "p3" {
 			listIDTTL := getTTLIDTomb(db)
 			delTombstone(db, listIDTTL)
 		} else {
