@@ -40,12 +40,17 @@ public class ops {
         queryManager = new QueryManager();
         String query = "DELETE from mall_observation WHERE id = \'" + key + "\';";
         int status = queryManager.runMidDelMod(query);
+        query = "VACUUM mall_observation";
         // get polid first, then delete
         String[] polid = getPolicyIdFromEntry(key);
         query = "DELETE from user_policy WHERE key = \'" + key + "\';";
         status = queryManager.runMidDelMod(query);
+        query = "VACUUM user_policy";
+        queryManager.runMidDelMod(query);
         query = "DELETE from user_policy_object_condition WHERE policy_id = \'" + polid[0] + "\';";
         status = queryManager.runMidDelMod(query);
+        query = "VACUUM user_policy_object_condition";
+        queryManager.runMidDelMod(query);
         return status;
     }
 
