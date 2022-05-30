@@ -6,9 +6,11 @@ import edu.uci.ics.tippers.dbms.QueryResult;
 // import edu.uci.ics.tippers.execution.ExpResult;
 // import edu.uci.ics.tippers.fileop.Writer;
 import edu.uci.ics.tippers.persistor.PolicyPersistor;
+import edu.uci.ics.tippers.producer.LogSieve;
 import edu.uci.ics.tippers.model.guard.GuardExp;
 import edu.uci.ics.tippers.model.guard.SelectGuard;
 import edu.uci.ics.tippers.model.middleware.MetaData;
+import edu.uci.ics.tippers.model.middleware.PuciLog;
 import edu.uci.ics.tippers.model.policy.BEExpression;
 import edu.uci.ics.tippers.model.policy.BEPolicy;
 // import java.time.*;
@@ -51,6 +53,11 @@ public class ops {
         status = queryManager.runMidDelMod(query);
         query = "VACUUM user_policy_object_condition";
         queryManager.runMidDelMod(query);
+        PuciLog pl = new PuciLog(key, query, "succ", "true");
+        try {
+            LogSieve ls = new LogSieve();
+            ls.sendResults(pl);
+        } catch (Exception e) { e.printStackTrace(); }
         return status;
     }
 
@@ -123,8 +130,14 @@ public class ops {
         sb.append("\'").append(timestamp).append("\', ");
         sb.append("").append(metaData.getDeviceID()).append(", ");
         sb.append("\'").append(metaData.getKey()).append("\');");
-        System.out.println(sb.toString());
-        return queryManager.runMidDelMod(sb.toString());
+        // System.out.println(sb.toString());
+        String query = sb.toString();
+        PuciLog pl = new PuciLog(metaData.getKey(), query, "succ", "false");
+        try {
+            LogSieve ls = new LogSieve();
+            ls.sendResults(pl);
+        } catch (Exception e) { e.printStackTrace(); }
+        return queryManager.runMidDelMod(query);
 
     }
 
@@ -170,38 +183,59 @@ public class ops {
         final String[] mdCols = {"device_id", "shop_name", "obs_date", "obs_time", "user_interest"};
         int status = 0;
         for(int i = 0; i < mdCols.length; i++) {
-            System.out.println(mdCols[i].equals("user_interest"));
-            System.out.println(mdCols[i]);
             if(mdCols[i].equals("user_interest") && !mallData.getUserInterest().isEmpty()) {
-                System.out.println("FELL HERE CUZ JAVA SUX");
                 String query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
-                System.out.println(query);
+                PuciLog pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                try {
+                    LogSieve ls = new LogSieve();
+                    ls.sendResults(pl);
+                } catch (Exception e) { e.printStackTrace(); }
                 counter = counter + 1;
                 status = queryManager.runMidDelMod(query);
                 query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
-                System.out.println(query);
+                pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                try {
+                    LogSieve ls = new LogSieve();
+                    ls.sendResults(pl);
+                } catch (Exception e) { e.printStackTrace(); }
                 counter = counter + 1;
                 status = queryManager.runMidDelMod(query);
             } else {
                 if(mdCols[i].equals("obs_date") || mdCols[i].equals("obs_time")) {
                     String query = buildOCInsert(mallData, polID, mdCols[i], "<=", counter);
-                    System.out.println(query);
+                    PuciLog pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                    try {
+                        LogSieve ls = new LogSieve();
+                        ls.sendResults(pl);
+                    } catch (Exception e) { e.printStackTrace(); }
                     counter = counter + 1;
                     status = queryManager.runMidDelMod(query);
                     query = buildOCInsert(mallData, polID, mdCols[i], ">=", counter);
-                    System.out.println(query);
+                    pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                    try {
+                        LogSieve ls = new LogSieve();
+                        ls.sendResults(pl);
+                    } catch (Exception e) { e.printStackTrace(); }
                     counter = counter + 1;
                     status = queryManager.runMidDelMod(query);
                 } else if(!mdCols[i].equals("user_interest")) {
-                    if (mdCols[i].equals("user_interest")) {
-                        System.out.println("FELL HERE CUZ JAVA SUX2");
-                    }
+                    // if (mdCols[i].equals("user_interest")) {
+                    //     System.out.println("FELL HERE CUZ JAVA SUX2");
+                    // }
                     String query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
-                    System.out.println(query);
+                    PuciLog pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                    try {
+                        LogSieve ls = new LogSieve();
+                        ls.sendResults(pl);
+                    } catch (Exception e) { e.printStackTrace(); }
                     counter = counter + 1;
                     status = queryManager.runMidDelMod(query);
                     query = buildOCInsert(mallData, polID, mdCols[i], "=", counter);
-                    System.out.println(query);
+                    pl = new PuciLog(mallData.getId(), query, "succ", "false");
+                    try {
+                        LogSieve ls = new LogSieve();
+                        ls.sendResults(pl);
+                    } catch (Exception e) { e.printStackTrace(); }
                     counter = counter + 1;
                     status = queryManager.runMidDelMod(query);
                 }
@@ -238,7 +272,7 @@ public class ops {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String query = "SELECT * from user_policy where device_id = \'" + device_id + "\' AND key = \'" + key + "\'";
-        return queryManager.getMData(query);
+        return queryManager.getMData(query, key);
 
 
     }
@@ -315,7 +349,13 @@ public class ops {
         String query = "";
         query = "UPDATE user_policy SET " + prop + "= \'" + changeVal + "\' WHERE " + prop + "= \'" + info + "\' AND querier = \'" + querier + "\'";
         System.out.println(query);
-        return queryManager.runMidDelMod(query);
+        int stat = queryManager.runMidDelMod(query);
+        PuciLog pl = new PuciLog(querier, query, "succ", "false");
+        try {
+            LogSieve ls = new LogSieve();
+            ls.sendResults(pl);
+        } catch (Exception e) { e.printStackTrace(); }
+        return stat;
     }
 
     public int updateMetaEntry(String updateKey, String prop, String info) {
@@ -323,7 +363,13 @@ public class ops {
         queryManager = new QueryManager();
         String query = "UPDATE user_policy SET " + prop + "= \'" + info + "\' WHERE key = \'" + updateKey + "\';";
         System.out.println(query);
-        return queryManager.runMidDelMod(query);
+        int stat = queryManager.runMidDelMod(query);
+        PuciLog pl = new PuciLog(updateKey, query, "succ", "false");
+        try {
+            LogSieve ls = new LogSieve();
+            ls.sendResults(pl);
+        } catch (Exception e) { e.printStackTrace(); }
+        return stat;
     }
 
     public void update(){

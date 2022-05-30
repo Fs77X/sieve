@@ -2,7 +2,9 @@ package edu.uci.ics.tippers.persistor;
 
 import edu.uci.ics.tippers.common.AttributeType;
 import edu.uci.ics.tippers.common.PolicyConstants;
+import edu.uci.ics.tippers.model.middleware.PuciLog;
 import edu.uci.ics.tippers.model.policy.*;
+import edu.uci.ics.tippers.producer.LogSieve;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -170,6 +172,23 @@ public class PolicyPersistor {
                 queryStm.setString(1, enforcement_action);
             }
             ResultSet rs = queryStm.executeQuery();
+            String q = queryStm.toString();
+            StringBuilder builder = new StringBuilder();
+            int columnCount = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                for (int i = 0; i < columnCount;) {
+                    builder.append(rs.getString(i + 1));
+                    if (++i < columnCount) builder.append(",");
+                }
+                builder.append("\r\n");
+            }
+            String resultSetAsString = builder.toString();
+            PuciLog pl = new PuciLog(querier, q, resultSetAsString, "false");
+            try {
+                LogSieve ls = new LogSieve();
+                ls.sendResults(pl);
+            } catch (Exception e) { e.printStackTrace(); }
+            rs.beforeFirst();
             if (!rs.next())
                 return null;
             String next = null;

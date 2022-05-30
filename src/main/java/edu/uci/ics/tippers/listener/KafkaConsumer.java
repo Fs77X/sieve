@@ -47,15 +47,15 @@ public class KafkaConsumer {
         this.counter = newcounter;
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mget_objUSR(String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -69,15 +69,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mget_obj(String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -92,15 +92,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
         
     }
 
@@ -115,15 +115,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
 
     }
 
@@ -139,15 +139,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mdelete_obj(String key, String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -162,15 +162,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
 
     }
 
@@ -187,15 +187,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mmodify_metaobj(String updateKey, String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -210,15 +210,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     private void mmodify_metaController(String changeVal, String querier, String prop, String info, String qid, QueryKafka qk) {
@@ -233,15 +233,15 @@ public class KafkaConsumer {
         }
         CloudResponse cr = new CloudResponse();
         cr.sendResponse(msg);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String operation = mapper.writeValueAsString(qk);
-            LogMessage lm = new LogMessage(querier, operation);
-            LogResults lr = new LogResults();
-            lr.sendResults(lm);
-        } catch (JsonParseException e) { e.printStackTrace();}
-        catch (JsonMappingException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); }
+        // try {
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     String operation = mapper.writeValueAsString(qk);
+        //     LogMessage lm = new LogMessage(querier, operation);
+        //     LogResults lr = new LogResults();
+        //     lr.sendResults(lm);
+        // } catch (JsonParseException e) { e.printStackTrace();}
+        // catch (JsonMappingException e) { e.printStackTrace(); }
+        // catch (IOException e) { e.printStackTrace(); }
     }
 
     @Autowired

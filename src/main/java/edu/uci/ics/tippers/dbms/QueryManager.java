@@ -126,9 +126,9 @@ public class QueryManager {
         }
     }
 
-    public MetaData[] getMData(String query) {
+    public MetaData[] getMData(String query, String key) {
         try {
-            return queryExecutor.getMetaEntry(query);
+            return queryExecutor.getMetaEntry(query, key);
         } catch (Exception e) {
             throw new PolicyEngineException("Error Running Query");
         }

@@ -27,6 +27,12 @@ const (
 	DB_NAME     = "the_db"
 )
 
+const (
+	SIEVE_USER = "sieve"
+	SIEVE_PASSWORD = ""
+	SIEVE_NAME = "sieve"
+)
+
 // type struct ttlRet {
 // 	Id string `json:"id"`
 // 	TTL int64 `json:"ttl"`
@@ -40,6 +46,12 @@ const (
 type md struct {
 	Id  string `json:"id"`
 	TTL int64  `json:"ttl"`
+}
+
+type mds struct {
+	Key  string `json:"key"`
+	TTL int64  `json:"ttl"`
+	Device_Id int `json:"device_id"`
 }
 
 type mde struct {
@@ -71,6 +83,42 @@ func MDColUTe(colname string, newMD *mde) interface{} {
 	default:
 		panic("unknown column " + colname)
 	}
+}
+
+func MDColUTs(colname string, newMD *mds) interface{} {
+	switch colname {
+	case "key":
+		return &newMD.Key
+	case "ttl":
+		return &newMD.TTL
+	case "device_id":
+		return &newMD.Device_Id
+	default:
+		panic("unknown column " + colname)
+	}
+}
+
+
+func sieveTTLID(db *sql.DB) []mds{
+	rows, err := db.Query("SELECT key, ttl, device_id from user_policy;")
+	checkErr(err)
+	var res []mds
+	var columns []string
+	columns, err1 := rows.Columns()
+	checkErr(err1)
+	colNum := len(columns)
+	for rows.Next() {
+		var newMds mds
+		cols := make([]interface{}, colNum)
+		for i := 0; i < colNum; i++ {
+			cols[i] = MDColUTs(columns[i], &newMds)
+		}
+
+		err2 := rows.Scan(cols...)
+		checkErr(err2)
+		res = append(res, newMds)
+	}
+	return res
 }
 
 func getTTLID(db *sql.DB) []md {
@@ -238,6 +286,40 @@ func delSeppy(db *sql.DB, listIDTTL []md) {
 
 }
 
+func perfSieveDel(device_id int, id string) {
+	devid := strconv.Itoa(device_id)
+	url := "http://localhost:5344/sieve/mdelete_obj/" +  devid + "/" + id
+	method := "DELETE"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("NO BUENO")
+	}
+}
+
+func delSieve(listIDTTL []mds) {
+	currTime := time.Now().Unix()
+	for _, mdObj := range listIDTTL {
+		if mdObj.TTL < currTime {
+			perfSieveDel(mdObj.Device_Id, mdObj.Key)
+		}
+	}
+	fmt.Println("DELSIEVE")
+}
+
+
 func delLSMeta(key string) {
 	url := "http://localhost:8000/mdelete_UserMetaobj/" + key
 	method := "DELETE"
@@ -326,8 +408,14 @@ func gdprLSTTL() {
 
 // basically same step with tombstoning
 func main() {
+	var db *sql.DB
 	tick := time.Tick(5 * time.Second)
-	db := setupDB()
+	if os.Args[1] == "p2" {
+		db = setupSieve()
+	} else {
+		db = setupDB()
+	}
+	
 	vac := false
 	vacfull := false
 	if os.Args[1] == "vac" {
@@ -341,6 +429,9 @@ func main() {
 		if os.Args[1] == "p1" {
 			listIDTTL := getTTLID(db)
 			delTTL(db, listIDTTL, true, false)
+		} else if os.Args[1] == "p2" {
+			listIDTTL := sieveTTLID(db)
+			delSieve(listIDTTL)
 		} else if os.Args[1] == "p3" {
 			listIDTTL := getTTLIDTomb(db)
 			delTombstone(db, listIDTTL)
@@ -361,6 +452,15 @@ func main() {
 
 func setupDB() *sql.DB {
 	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", DB_USER, DB_PASSWORD, DB_NAME)
+	db, err := sql.Open("postgres", dbinfo)
+
+	checkErr(err)
+
+	return db
+}
+
+func setupSieve() *sql.DB {
+	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", SIEVE_USER, SIEVE_PASSWORD, SIEVE_NAME)
 	db, err := sql.Open("postgres", dbinfo)
 
 	checkErr(err)

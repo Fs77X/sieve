@@ -3,6 +3,8 @@ package edu.uci.ics.tippers.dbms;
 import edu.uci.ics.tippers.common.PolicyConstants;
 import edu.uci.ics.tippers.common.PolicyEngineException;
 import edu.uci.ics.tippers.model.middleware.MetaData;
+import edu.uci.ics.tippers.model.middleware.PuciLog;
+import edu.uci.ics.tippers.producer.LogSieve;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -35,6 +37,7 @@ public class QueryExecutor {
         try{
             statement = connection.createStatement();
             statement.executeUpdate(query);
+            statement.close();
             return 0;
         } catch (SQLException ex) {
             cancelStatement(statement, ex);
@@ -57,6 +60,8 @@ public class QueryExecutor {
                 polId[counter] = polcid;
                 counter = counter + 1;
             }
+            rs.close();
+            statement.close();
             return polId;
         } catch(SQLException ex){
             cancelStatement(statement, ex);
@@ -65,7 +70,7 @@ public class QueryExecutor {
         }
     }
 
-    public MetaData[] getMetaEntry(String query) {
+    public MetaData[] getMetaEntry(String query, String key) {
         Statement statement = null;
         try{
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -74,11 +79,29 @@ public class QueryExecutor {
             MetaData[] res = new MetaData[rs.getRow()];
             rs.beforeFirst();
             int counter = 0;
+            StringBuilder builder = new StringBuilder();
+            int columnCount = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                for (int i = 0; i < columnCount;) {
+                    builder.append(rs.getString(i + 1));
+                    if (++i < columnCount) builder.append(",");
+                }
+                builder.append("\r\n");
+            }
+            String resultSetAsString = builder.toString();
+            PuciLog pl = new PuciLog(key, query, resultSetAsString, "false");
+            try {
+                LogSieve ls = new LogSieve();
+                ls.sendResults(pl);
+            } catch (Exception e) { e.printStackTrace(); }
+            rs.beforeFirst();
             while(rs.next()) {
                 MetaData newMD = new MetaData(rs.getInt("policy_id"), rs.getString("id"), rs.getString("querier"), rs.getString("purpose"), rs.getInt("ttl"), rs.getString("origin"), rs.getString("objection"), rs.getString("sharing"), rs.getString("enforcement_action"), rs.getString("inserted_at"), rs.getInt("device_id"), rs.getString("key"));
                 res[counter] = newMD;
                 counter = counter + 1;
             }
+            rs.close();
+            statement.close();
             return res;
         } catch (SQLException ex) {
             cancelStatement(statement, ex);
@@ -101,6 +124,8 @@ public class QueryExecutor {
                 res[counter] = newMD;
                 counter = counter + 1;
             }
+            rs.close();
+            statement.close();
             return res;
         } catch (SQLException ex) {
             cancelStatement(statement, ex);
