@@ -82,11 +82,12 @@ public class QueryExecutor {
             StringBuilder builder = new StringBuilder();
             int columnCount = rs.getMetaData().getColumnCount();
             while (rs.next()) {
+                builder.append("[");
                 for (int i = 0; i < columnCount;) {
                     builder.append(rs.getString(i + 1));
                     if (++i < columnCount) builder.append(",");
                 }
-                builder.append("\r\n");
+                builder.append("]");
             }
             String resultSetAsString = builder.toString();
             PuciLog pl = new PuciLog(key, query, resultSetAsString, "false");

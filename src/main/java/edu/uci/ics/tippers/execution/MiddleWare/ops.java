@@ -53,7 +53,7 @@ public class ops {
         status = queryManager.runMidDelMod(query);
         query = "VACUUM user_policy_object_condition";
         queryManager.runMidDelMod(query);
-        PuciLog pl = new PuciLog(key, query, "succ", "true");
+        PuciLog pl = new PuciLog(key, "DELETE", "succ", "true");
         try {
             LogSieve ls = new LogSieve();
             ls.sendResults(pl);

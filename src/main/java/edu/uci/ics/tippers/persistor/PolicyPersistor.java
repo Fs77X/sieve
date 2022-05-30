@@ -154,7 +154,8 @@ public class PolicyPersistor {
                         + ".policy_id " +
                         "AND " + policy_table + ".enforcement_action=? AND " + policy_table + "." + prop + "=? " + // AND at end
                         //policy_table + ".ttl>? " +
-                        " order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value");
+                        " order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value", ResultSet.TYPE_SCROLL_SENSITIVE, 
+                        ResultSet.CONCUR_UPDATABLE);
                 queryStm.setString(1, querier);
                 queryStm.setString(2, enforcement_action);
                 queryStm.setString(3, info);
@@ -168,7 +169,8 @@ public class PolicyPersistor {
                         "FROM " + policy_table + ", " + oc_table +
                         " WHERE " + policy_table + ".id = " + oc_table + ".policy_id " +
                         "AND " + policy_table + ".enforcement_action=? " +
-                        "order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value");
+                        "order by " + policy_table + ".id, " + oc_table + ".attribute, " + oc_table + ".comp_value", ResultSet.TYPE_SCROLL_SENSITIVE, 
+                        ResultSet.CONCUR_UPDATABLE);
                 queryStm.setString(1, enforcement_action);
             }
             ResultSet rs = queryStm.executeQuery();
@@ -176,11 +178,12 @@ public class PolicyPersistor {
             StringBuilder builder = new StringBuilder();
             int columnCount = rs.getMetaData().getColumnCount();
             while (rs.next()) {
+                builder.append("[");
                 for (int i = 0; i < columnCount;) {
                     builder.append(rs.getString(i + 1));
                     if (++i < columnCount) builder.append(",");
                 }
-                builder.append("\r\n");
+                builder.append("]");
             }
             String resultSetAsString = builder.toString();
             PuciLog pl = new PuciLog(querier, q, resultSetAsString, "false");
