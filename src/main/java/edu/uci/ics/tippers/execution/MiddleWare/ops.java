@@ -252,10 +252,10 @@ public class ops {
         PolicyConstants.initialize();
         queryManager = new QueryManager();
         String policy_id = metaData.getID();
-        String key = mallData.getId();
+        // String key = mallData.getId();
         int status = insertEntry(mallData);
-        status = insertPolicyEntry(metaData);
-        status = InsertOC(mallData, policy_id, counter);
+        // status = insertPolicyEntry(metaData);
+        // status = InsertOC(mallData, policy_id, counter);
         return status;
         
     }
