@@ -12,9 +12,9 @@ import (
 
 // Currently hosting db server locally, db credentials below
 const (
-	DB_USER = "postgres"
-	DB_PASSWORD = "admin"
-	DB_NAME = "the_db"
+	DB_USER = "sieve"
+	DB_PASSWORD = ""
+	DB_NAME = ""
 )
 
 type mData struct {
@@ -44,7 +44,7 @@ func refreshTTL(listOfIds []string, db *sql.DB) {
 		ttl := time.Now().Unix() + int64(rand.Intn(4000)+30)
 		_, err := db.Exec(`UPDATE user_policy SET ttl = $1 WHERE key = $2`, ttl, id)
 		checkErr(err)
-		fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(listofIds)))
+		fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(listOfIds)))
 	}
 }
 
@@ -77,7 +77,7 @@ func yoinkUUID(db *sql.DB) []string {
 
 func getID(db *sql.DB) []string {
 	var res []string
-	rows, err := db.Query("SELECT id from usertable;")
+	rows, err := db.Query("SELECT id from mall_observation;")
 	checkErr(err)
 	for rows.Next() {
 		var key string

@@ -90,11 +90,11 @@ public class QueryExecutor {
                 builder.append("]");
             }
             String resultSetAsString = builder.toString();
-            PuciLog pl = new PuciLog(key, query, resultSetAsString, "false");
-            try {
-                LogSieve ls = new LogSieve();
-                ls.sendResults(pl);
-            } catch (Exception e) { e.printStackTrace(); }
+            // PuciLog pl = new PuciLog(key, query, resultSetAsString, "false");
+            // try {
+            //     LogSieve ls = new LogSieve();
+            //     ls.sendResults(pl);
+            // } catch (Exception e) { e.printStackTrace(); }
             rs.beforeFirst();
             while(rs.next()) {
                 MetaData newMD = new MetaData(rs.getInt("policy_id"), rs.getString("id"), rs.getString("querier"), rs.getString("purpose"), rs.getInt("ttl"), rs.getString("origin"), rs.getString("objection"), rs.getString("sharing"), rs.getString("enforcement_action"), rs.getString("inserted_at"), rs.getInt("device_id"), rs.getString("key"));

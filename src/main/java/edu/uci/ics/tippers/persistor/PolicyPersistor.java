@@ -186,11 +186,11 @@ public class PolicyPersistor {
                 builder.append("]");
             }
             String resultSetAsString = builder.toString();
-            PuciLog pl = new PuciLog(querier, q, resultSetAsString, "false");
-            try {
-                LogSieve ls = new LogSieve();
-                ls.sendResults(pl);
-            } catch (Exception e) { e.printStackTrace(); }
+            // PuciLog pl = new PuciLog(querier, q, resultSetAsString, "false");
+            // try {
+            //     LogSieve ls = new LogSieve();
+            //     ls.sendResults(pl);
+            // } catch (Exception e) { e.printStackTrace(); }
             rs.beforeFirst();
             if (!rs.next())
                 return null;
