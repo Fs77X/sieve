@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"strconv"
+	// "strconv"
 )
 
 const (
@@ -30,31 +30,65 @@ func getOCID(db *sql.DB, key string) string {
 	return ocid
 }
 
-func deleteOC(db *sql.DB, policy_id string) {
-	_, err := db.Exec("DELETE FROM user_policy_object_condition WHERE policy_id = $1;", policy_id)
+func deleteOC(db *sql.DB, listids []string) {
+	querySelect := "SELECT id FROM user_policy WHERE key = "
+	for i, id := range listids {
+		querySelect += "'" + id + "'"
+		if i < len(listids) - 1 {
+			querySelect += " OR key = "
+		}
+	}
+
+	fmt.Println("generated deloc query")
+	// fmt.Println(querySelect)
+	queryDelete := "DELETE FROM user_policy_object_condition WHERE policy_id IN (" + querySelect + ");"
+	// fmt.Println(queryDelete)
+	_, err := db.Exec(queryDelete)
 	checkErr(err)
+	fmt.Println("done deleteing oc")
 }
 
-func deleteUserPolicy(db *sql.DB, key string) {
-	_, err := db.Exec("DELETE FROM user_policy WHERE key = $1;", key)
+func deleteUserPolicy(db *sql.DB, listids []string) {
+	queryDelPol := "DELETE FROM user_policy WHERE key = "
+	for i, id := range listids {
+		queryDelPol += "'" + id + "'"
+		if i < len(listids) - 1 {
+			queryDelPol += " OR key = "
+		}
+	}
+	fmt.Println("generated delup query")
+	_, err := db.Exec(queryDelPol)
 	checkErr(err)
+	fmt.Println("done deleteing up")
 
 }
 
 func deletePolicy(db *sql.DB, terminateIds []string) {
-	for i, id := range terminateIds {
-		ocid := getOCID(db, id)
-		deleteData(db, id)
-		deleteUserPolicy(db, id)
-		deleteOC(db, ocid)
-		fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(terminateIds)))
-	}
+	deleteOC(db, terminateIds)
+	deleteUserPolicy(db, terminateIds)
+	deleteData(db, terminateIds)
+	// for i, id := range terminateIds {
+	// 	ocid := getOCID(db, id)
+	// 	deleteData(db, id)
+	// 	deleteUserPolicy(db, id)
+	// 	deleteOC(db, ocid)
+	// 	fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(terminateIds)))
+	// }
 
 }
 
-func deleteData(db *sql.DB, key string) {
-	_, err := db.Exec("DELETE FROM mall_observation WHERE id = $1;", key)
+func deleteData(db *sql.DB, listids []string) {
+	querydelData := "DELETE FROM mall_observation WHERE id = "
+	for i, id := range listids {
+		querydelData += "'" + id + "'"
+		if i < len(listids) - 1 {
+			querydelData += " OR id = "
+		}
+	}
+	fmt.Println("generated del query")
+	_, err := db.Exec(querydelData)
 	checkErr(err)
+	fmt.Println("done delup query")
 }
 
 func yoinkMallDBIDS(db *sql.DB, limit int)[] string {
@@ -73,9 +107,15 @@ func yoinkMallDBIDS(db *sql.DB, limit int)[] string {
 }
 func main() {
 	db := setupDB()
-	listofIds := yoinkMallDBIDS(db, 10000)
+	listofIds := yoinkMallDBIDS(db, 400000)
 	fmt.Println(len(listofIds))
-	deletePolicy(db, listofIds)
+	size := len(listofIds)
+	m := size/1000
+	for i:=0; i < m; i++ {
+		fmt.Println(i)
+		deletePolicy(db, listofIds[i*1000:((i+1) * 1000)])
+	}
+	
 }
 
 // DB set up
