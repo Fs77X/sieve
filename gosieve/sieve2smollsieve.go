@@ -43,10 +43,10 @@ func deleteUserPolicy(db *sql.DB, key string) {
 
 func deletePolicy(db *sql.DB, terminateIds []string) {
 	for i, id := range terminateIds {
-		// ocid := getOCID(db, id)
+		ocid := getOCID(db, id)
 		deleteData(db, id)
-		// deleteUserPolicy(db, id)
-		// deleteOC(db, ocid)
+		deleteUserPolicy(db, id)
+		deleteOC(db, ocid)
 		fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(terminateIds)))
 	}
 

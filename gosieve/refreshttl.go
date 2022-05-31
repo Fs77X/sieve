@@ -42,8 +42,9 @@ func refreshTTL(listOfIds []string, db *sql.DB) {
 	for i, id := range listOfIds {
 		fmt.Println("iter: " + strconv.Itoa(i))
 		ttl := time.Now().Unix() + int64(rand.Intn(4000)+30)
-		_, err := db.Exec(`UPDATE usertable SET ttl = $1 WHERE id = $2`, ttl, id)
+		_, err := db.Exec(`UPDATE user_policy SET ttl = $1 WHERE key = $2`, ttl, id)
 		checkErr(err)
+		fmt.Println(strconv.Itoa(i) + " of " + strconv.Itoa(len(listofIds)))
 	}
 }
 
