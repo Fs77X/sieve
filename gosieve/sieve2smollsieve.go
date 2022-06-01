@@ -107,8 +107,9 @@ func yoinkMallDBIDS(db *sql.DB, limit int)[] string {
 }
 func main() {
 	db := setupDB()
-	listofIds := yoinkMallDBIDS(db, 400000)
+	listofIds := yoinkMallDBIDS(db, 200000)
 	fmt.Println(len(listofIds))
+	// deletePolicy(db, listofIds)
 	size := len(listofIds)
 	m := size/1000
 	for i:=0; i < m; i++ {
